@@ -6,6 +6,12 @@
 
 # Guida Completa all'Installazione
 
+### "All-in-One"
+Per installare **tutto** in un unico comando:
+```bash
+sudo apt update && sudo apt install -y net-tools curl wget git gedit build-essential default-jdk nodejs npm mosquitto mosquitto-clients wireshark python3 python3-pip texlive-base
+```
+
 ## 1. Aggiornamento Iniziale del Sistema
 ```bash
 sudo apt update
@@ -33,7 +39,7 @@ sudo apt install -y default-jre
 sudo apt install -y nodejs npm
 ```
 
-## 6. Ambiente IoT e MQTT
+## 6. Ambiente MQTT
 ```bash
 # Installazione del broker Mosquitto e dei client CLI
 sudo apt install -y mosquitto mosquitto-clients
@@ -48,15 +54,9 @@ sudo systemctl start mosquitto
 sudo apt install -y wireshark tshark tcpdump
 ```
 
-## 9. Ambiente LaTeX 
+## 8. Ambiente LaTeX 
 ```bash
 sudo apt install -y texlive-base
 ```
 
 ---
-
-### "All-in-One"
-Per installare **tutto** in un unico comando:
-```bash
-sudo apt update && sudo apt install -y net-tools curl wget git gedit build-essential default-jdk nodejs npm mosquitto mosquitto-clients wireshark python3 python3-pip texlive-base
-```
