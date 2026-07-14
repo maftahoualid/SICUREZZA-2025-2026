@@ -56,7 +56,7 @@ sudo apt install -y texlive-base
 ---
 
 ### "All-in-One"
-Per installare **tutto** tranne LaTeX e Docker in un unico comando:
+Per installare **tutto** in un unico comando:
 ```bash
-sudo apt update && sudo apt install -y net-tools curl wget git gedit build-essential default-jdk nodejs npm mosquitto mosquitto-clients wireshark python3 python3-pip
+sudo apt update && sudo apt install -y net-tools curl wget git gedit build-essential default-jdk nodejs npm mosquitto mosquitto-clients wireshark python3 python3-pip texlive-base
 ```
