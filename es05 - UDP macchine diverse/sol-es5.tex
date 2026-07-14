@@ -1,0 +1,54 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black},
+    numbers=none,
+    frame=single,
+    breaklines=true
+}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+5) [Da fare solo se in Lab Delta] Accordarsi per lavorare su coppie di macchine in modo che server e client siano su macchine diverse. Come bisogna modificare i sorgenti?
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Per far comunicare server e client posizionati su due macchine fisiche (o virtuali) diverse, l'unica modifica necessaria riguarda il client (\texttt{clientUDP.c}).
+
+Ecco i dettagli:
+
+\begin{itemize}
+    \item \textbf{Modifica al Client (\texttt{clientUDP.c}):}
+    Attualmente, la funzione \texttt{UDPSend} invia il pacchetto all'indirizzo ``127.0.0.1'', che rappresenta la macchina locale (loopback interface). Per raggiungere il server su una macchina differente, devi sostituire ``127.0.0.1'' con il reale indirizzo \texttt{IP} della macchina su cui sta girando il server (ad esempio ``192.168.1.50'', oppure il corrispondente hostname se la rete lo risolve).
+\end{itemize}
+
+\begin{lstlisting}
+// Prima:
+UDPSend(socket, request, strlen(request), "127.0.0.1", 35000);
+
+// Dopo (inserendo l'IP del PC del tuo collega/dell'altra macchina):
+UDPSend(socket, request, strlen(request), "192.168.1.50", 35000);
+\end{lstlisting}
+
+\begin{itemize}
+    \item \textbf{Nessuna modifica al Server (\texttt{serverUDP.c}):}
+    Il sorgente del server non ha bisogno di essere toccato. Questo perché, se ispezioniamo la libreria \texttt{network.c}, la funzione \texttt{createUDPInterface} è progettata per configurare il socket (\texttt{bind()}) utilizzando la costante \texttt{INADDR\_ANY}. Questo indica al sistema operativo di mettere il server in ascolto su tutte le interfacce di rete disponibili della macchina (sia quella locale 127.0.0.1 sia l'interfaccia esposta sulla rete LAN associata al suo \texttt{IP}). Pertanto, il server è già pronto a ricevere pacchetti provenienti dall'esterno.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

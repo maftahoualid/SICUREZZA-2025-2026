@@ -1,0 +1,89 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Un semplice web server
+\begin{itemize}
+    \item Aprire il file \texttt{serverHTTP.c} in \texttt{Esempi-web/} e analizzarne il contenuto
+    \item Compilarlo come nell'esercitazione sull'interfaccia socket ed eseguirlo
+    \item Provare ad aprire un secondo terminale nella stessa cartella e a rilanciare lo stesso server. Funziona? Perché?
+    \item Aprire il browser preferito e impostare la URL ``\texttt{http://127.0.0.1:8000/}'' Cosa si vede sul browser e sul terminale?
+    \item Aprire il browser preferito e impostare la URL ``\texttt{http://localhost:8000/}'' Cosa cambia?
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Soluzione Esercizio 22:} Un semplice web server
+
+\textbf{Operazioni Preliminari e Compilazione}\\
+Inizialmente sono stati copiati i file necessari (\texttt{serverHTTP.c}, \texttt{network.c}, \texttt{network.h}) all'interno della cartella dell'esercizio. Analizzando il sorgente di "\texttt{serverHTTP.c}", sono stati corretti alcuni commenti non validi scritti in stile Python (carattere "\#") sostituendoli con quelli corretti in linguaggio C ("\texttt{//}"). Infine, il codice è stato compilato tramite il comando \texttt{gcc}.\\
+Il file è un banale server \texttt{TCP} che resta in ascolto sulla porta 8000, accetta la connessione di un client, processa testualmente la richiesta leggendo riga per riga l'header \texttt{HTTP}, invia in risposta una pagina HTML di base e infine chiude la socket.
+
+\textbf{Rilancio del Server su un secondo terminale}\\
+Se si prova a lanciare una seconda istanza del server in un altro terminale, mentre il primo è ancora in esecuzione, il programma terminerà subito per un errore. Questo avviene a causa del fallimento della syscall "bind": non è possibile associare la medesima porta e lo stesso indirizzo a due processi in ascolto nello stesso istante.
+
+\textbf{Navigazione tramite l'indirizzo IP (127.0.0.1)}\\
+Richiedendo con il browser la URL "\texttt{http://127.0.0.1:8000/}":
+\begin{itemize}
+    \item \textbf{Nel browser:} Si visualizza il contenuto statico inserito nel server (la scritta "Hello World, this is a very simple HTML document.").
+    \item \textbf{Nel terminale:} Il programma stampa la richiesta \texttt{HTTP} pura inviata dal browser. Tra le varie intestazioni è presente la prima riga "\texttt{GET / HTTP/1.1}" e in particolare l'intestazione "\texttt{Host: 127.0.0.1:8000}".
+\end{itemize}
+
+\textbf{Navigazione tramite Hostname (localhost)}\\
+Richiedendo con il browser la URL "\texttt{http://localhost:8000/}":
+\begin{itemize}
+    \item \textbf{Nel browser:} Non cambia assolutamente nulla, in quanto l'hostname "localhost" viene risolto localmente nell'IP di loopback 127.0.0.1. Il server riceverà la connessione e invierà in risposta la stessa identica pagina HTML.
+    \item \textbf{Nel terminale:} La richiesta catturata cambierà l'intestazione Host, che rifletterà la stringa usata dal client, diventando "\texttt{Host: localhost:8000}". Questo dimostra come l'hostname testuale digitato dall'utente venga inserito dal browser e trasmesso all'interno delle intestazioni \texttt{HTTP}.
+\end{itemize}
+
+\textbf{Comandi Utili per il Test e l'Analisi}
+
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+# 1. Compilazione
+gcc serverHTTP.c network.c -o serverHTTP
+
+# 2. Esecuzione del Web Server
+./serverHTTP
+
+# 3. Test tramite CLI (utilizzando curl per visualizzare gli header scambiati)
+curl -v http://127.0.0.1:8000/
+curl -v http://localhost:8000/
+
+# 4. Registrazione del Traffico (cattura su interfaccia locale 'lo' sulla porta 8000)
+# Tramite riga di comando (salvataggio su file .pcap):
+sudo tshark -i lo -f "tcp port 8000" -w web_traffic.pcap
+
+# 5. Analisi del Traffico Registrato
+# --- Tramite Riga di Comando (CLI) ---
+# 1. Leggere tutti i pacchetti registrati:
+tshark -r web_traffic.pcap
+
+# 2. Filtrare per mostrare solo i messaggi a livello applicativo HTTP:
+tshark -r web_traffic.pcap -Y "http"
+
+# 3. Leggere il contenuto completo delle intestazioni (Dettagli pacchetto estesi):
+tshark -r web_traffic.pcap -Y "http" -V
+
+# 4. Seguire l'intera conversazione scambiata:
+tshark -r web_traffic.pcap -z follow,tcp,ascii,0
+
+# --- Tramite Interfaccia Grafica (GUI) ---
+# Lanciare Wireshark normalmente:
+sudo wireshark
+# Oppure per aprire direttamente il file registrato per l'analisi visiva:
+wireshark web_traffic.pcap
+\end{lstlisting}
+\end{tcolorbox}
+
+\end{document}

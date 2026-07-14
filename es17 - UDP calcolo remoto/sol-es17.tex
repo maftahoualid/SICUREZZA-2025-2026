@@ -1,0 +1,79 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black},
+    numbers=none,
+    frame=single,
+    breaklines=true
+}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Temi d'esame (per ognuno ragionare sulla scelta del protocollo di livello trasporto)
+\begin{itemize}
+    \item Implementare un servizio di calcolo remoto: il client spedisce al server in un unico messaggio due numeri interi e il tipo di operatore (somma, sottrazione, moltiplicazione, divisione) e il server, dopo aver svolto il calcolo, restituisce il risultato al client che così termina la sua esecuzione.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Piano di Implementazione:} Servizio di Calcolo Remoto (es17)
+
+\textbf{1. Scelta del Protocollo di Trasporto}\\
+La traccia chiede di ragionare sulla scelta tra \texttt{UDP} e \texttt{TCP} per un servizio in cui il client invia un unico messaggio con i dati, riceve la risposta e termina.
+
+\textbf{Scelta ideale:} \texttt{UDP}
+
+\begin{itemize}
+    \item \textbf{Motivazione:} Il modello di comunicazione richiesto è strettamente di tipo "Richiesta-Risposta" singola. Il payload (due interi e un carattere per l'operatore) è minuscolo e rientra comodamente in un unico datagramma \texttt{UDP}.
+    \item \textbf{Efficienza:} Usare \texttt{TCP} richiederebbe un notevole overhead per stabilire la connessione (3-way handshake) e abbatterla, scambiando una decina di pacchetti di controllo solo per inviare due messaggi utili. Con \texttt{UDP}, i pacchetti in gioco sono solo due (uno di andata, uno di ritorno).
+    \item \textbf{Risoluzione di inaffidabilità:} Trattandosi di una singola query, se il pacchetto va perso il client potrebbe semplicemente riprovare (con un timeout applicativo), in maniera del tutto analoga a come funziona il protocollo DNS.
+\end{itemize}
+Pertanto, l'implementazione proposta utilizzerà \texttt{UDP}.
+
+\textbf{2. Struttura dei Dati}\\
+Definiremo una struct per il messaggio di richiesta:
+
+\begin{lstlisting}
+typedef struct {
+    int operando1;
+    int operando2;
+    char operatore; // '+', '-', '*', '/'
+} RichiestaCalcolo;
+\end{lstlisting}
+
+\textbf{3. Implementazione del Client (\texttt{clientUDP.c})}
+\begin{itemize}
+    \item Crea un'interfaccia \texttt{UDP} (es. porta 20000).
+    \item Chiede in input all'utente i due numeri e l'operatore.
+    \item Popola la struct \texttt{RichiestaCalcolo}.
+    \item Spedisce la struct al server (\texttt{UDPSend}).
+    \item Attende il risultato in ricezione (\texttt{UDPReceive}).
+    \item Stampa il risultato e termina.
+\end{itemize}
+
+\textbf{4. Implementazione del Server (\texttt{serverUDP.c})}
+\begin{itemize}
+    \item Crea un'interfaccia \texttt{UDP} in ascolto (es. porta 35000).
+    \item Entra in un ciclo infinito di ricezione \texttt{UDPReceive} in attesa di richieste.
+    \item Quando riceve una \texttt{RichiestaCalcolo}, valuta l'operatore (\texttt{switch} statement).
+    \item Calcola il risultato (float o intero, gestiremo le divisioni o daremo un intero).
+    \item Risponde al client inviando il risultato.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

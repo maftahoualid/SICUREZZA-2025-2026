@@ -1,0 +1,39 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+3) Mettere il server in ascolto sulla porta 100 e osservare cosa succede
+\begin{itemize}
+    \item Bisogna modificare anche il client? Dove?
+    \item Per chi usa il proprio PC con Linux o una virtual machine Linux, lanciare il server con il comando ``\texttt{sudo ./serverUDP}'' e osservare cosa cambia
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Ecco le risposte alle tue domande:
+
+\begin{itemize}
+    \item \textbf{Bisogna modificare anche il client? Dove?}
+    
+    Sì, è indispensabile modificare anche il client. Affinché il client riesca a contattare il server, deve inviare il messaggio alla porta corretta. Nel file \texttt{clientUDP.c} è necessario modificare il numero di porta di destinazione passato come ultimo argomento alla funzione \texttt{UDPSend} (portandolo da 10000 a 100). Nel codice aggiornato, questo si traduce nell'impostare la macro \texttt{SERVERPORT} a 100 anche per il client.
+    
+    \item \textbf{Per chi usa il proprio PC con Linux... lanciare il server con ``\texttt{sudo ./serverUDP}'' e osservare cosa cambia}
+    
+    Sui sistemi Linux (e Unix in generale), le porte di rete numerate da 0 a 1023 sono definite "privileged ports" (o well-known ports). Se tenti di eseguire \texttt{./serverUDP} in ascolto sulla porta 100 come utente normale, il sistema operativo impedirà l'operazione. La funzione di sistema per riservare la porta (\texttt{bind()}) fallirà restituendo un errore di "Permission denied". Di conseguenza, il server non si avvierà.
+    
+    Utilizzando invece \texttt{sudo ./serverUDP}, il programma viene eseguito con i privilegi massimi (utente root), che possiede l'autorizzazione per vincolare i processi alle porte privilegiate (< 1024). In questo caso, il server si avvierà con successo e si metterà normalmente in ascolto sulla porta 100.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

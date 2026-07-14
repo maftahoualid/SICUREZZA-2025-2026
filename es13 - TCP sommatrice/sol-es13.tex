@@ -1,0 +1,31 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+12) Scrivere la sommatrice usando TCP, compilare ed eseguire
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Ho completato la scrittura della sommatrice basata su \texttt{TCP} operando sui file nella cartella es13 e li ho ricompilati.
+
+Ecco nel dettaglio cosa ho modificato:
+
+\begin{itemize}
+    \item \textbf{Modifiche al Client (\texttt{clientTCP.c}):} Subito dopo aver instaurato la connessione logica (con \texttt{createTCPConnection}), ho inserito un ciclo \texttt{do-while} che continua a chiedere e acquisire un numero intero dall'utente (\texttt{scanf}), inviandolo immediatamente al server tramite \texttt{TCPSend} sul canale stabilito. Il ciclo termina quando l'utente digita lo 0. Dopodiché, il client si mette in attesa con \texttt{TCPReceive} e stampa a video la somma finale prima di chiudere la connessione.
+    
+    \item \textbf{Modifiche al Server (\texttt{serverTCP.c}):} Subito dopo aver accettato la connessione (\texttt{acceptConnection}), ho introdotto la variabile \texttt{int somma = 0;}. Da quel momento il server entra in un ciclo \texttt{do-while} in cui usa \texttt{TCPReceive} per leggere i valori in arrivo dal "tubo" logico del client e li accumula nella variabile \texttt{somma}. Non appena arriva il valore 0, il server esce dal ciclo e utilizza la \texttt{TCPSend} per rispedire la somma totale al client. Al termine chiude la connessione.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

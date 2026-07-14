@@ -1,0 +1,81 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Esercizio
+\begin{itemize}
+    \item Considerare la cartella Webservice/
+    \item Aprire il file \texttt{serverHTTP-REST.c} e analizzarne il contenuto
+    \item Compilarlo come al solito ed eseguirlo
+    \item Aprire il file \texttt{clientREST-GET.c} e analizzarne il contenuto
+    \item Compilarlo come al solito ed eseguirlo
+    \begin{itemize}
+        \item Che parametri devo passare in linea di comando?
+        \item Cosa si può vedere analizzando lo scambio di dati tramite Wireshark?
+        \item Qual è la signature della funzione \texttt{calcolaSomma()} sul server e sul client? Perché ha senso che siano uguali?
+    \end{itemize}
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Soluzione Esercizio 29:} Webservice REST (RPC via HTTP)
+
+\textbf{Operazioni Preliminari}\\
+Ho copiato i file \texttt{serverHTTP-REST.c}, \texttt{clientREST-GET.c} e la libreria di rete all'interno della cartella dell'esercizio 29, compilandoli regolarmente con GCC.
+
+\textbf{Risposte alle domande:}
+
+\begin{enumerate}
+    \item \textbf{Che parametri devo passare in linea di comando?}\\
+    Guardando il codice del \texttt{main()} nel client, notiamo che l'eseguibile si aspetta che gli vengano passati 3 argomenti dopo il suo nome (\texttt{argc < 4}).\\
+    \textbf{I parametri da passare sono, in ordine:} il nome della funzione da chiamare e i due operandi.\\
+    \textbf{Esempio di utilizzo corretto:} \texttt{./clientREST-GET calcola-somma 10.5 4.5}
+
+    \item \textbf{Cosa si può vedere analizzando lo scambio di dati tramite Wireshark?}\\
+    Si osserva perfettamente il funzionamento di un'API REST:
+    \begin{itemize}
+        \item Il client effettua una richiesta \texttt{HTTP} GET formattando l'URL con i parametri "serializzati": \texttt{GET /calcola-somma?param1=10.500000\&param2=4.500000 HTTP/1.1}
+        \item Il server risponde con un classico pacchetto \texttt{HTTP 200 OK}, ma invece di inviare codice HTML, nel Payload (Body) restituisce i dati strutturati formattati in \textbf{JSON}:
+\begin{lstlisting}[language=json, basicstyle=\ttfamily\small]
+{
+    "somma": 15.000000
+}
+\end{lstlisting}
+        Questo dimostra come i Webservice REST usino il protocollo web per lo scambio di dati "raw" tra macchine e non per le interfacce umane.
+    \end{itemize}
+
+    \item \textbf{Qual è la signature della funzione \texttt{calcolaSomma()} sul server e sul client? Perché ha senso che siano uguali?}\\
+    \textbf{La signature (firma della funzione) è identica in entrambi i file:} \texttt{float calcolaSomma(float val1, float val2)}.\\
+    Questo ha un grandissimo senso architetturale ed è alla base del concetto di \textbf{RPC (Remote Procedure Call)}:
+    \begin{itemize}
+        \item \textbf{Sul Server:} la funzione contiene la vera \textit{Business Logic}, ovvero svolge effettivamente il calcolo matematico \texttt{val1 + val2} e restituisce il risultato.
+        \item \textbf{Sul Client:} la funzione funge da \textbf{Stub} (un intermediario/simulacro). Il suo scopo è "nascondere" al programmatore principale tutta la complessità della rete. Lo sviluppatore che scrive il \texttt{main()} del client può limitarsi a invocare \texttt{calcolaSomma(10, 5)} credendo di eseguire una normale funzione C locale. In realtà, lo Stub intercetta la chiamata, \textit{serializza} i parametri nell'URL, effettua la richiesta di rete \texttt{HTTP}, riceve la risposta, \textit{deserializza} il JSON per estrarne il numero puro, e lo restituisce al \texttt{main()}.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Comandi utili:}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+# Compila server e client
+gcc serverHTTP-REST.c network.c -o serverHTTP-REST
+gcc clientREST-GET.c network.c -o clientREST-GET
+
+# Avvia il server su un terminale
+./serverHTTP-REST
+
+# Esegui il client su un altro terminale
+./clientREST-GET calcola-somma 10.5 4.5
+\end{lstlisting}
+\end{tcolorbox}
+
+\end{document}

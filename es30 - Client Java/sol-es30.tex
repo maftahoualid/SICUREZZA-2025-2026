@@ -1,0 +1,61 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Esercizio 2
+\begin{itemize}
+    \item Prendere in considerazione il file \texttt{ClientREST.java}
+    \begin{itemize}
+        \item Dopo aver installato l’ambiente base di Java (già presente in Lab Delta) si può compilare con \texttt{javac ClientREST.java}
+        \item Ed eseguire con \texttt{java ClientREST}
+    \end{itemize}
+    \item Il fatto che il server sia fatto in C e il client in Java è un problema o un’opportunità? Perché?
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Soluzione Esercizio 30:} Webservice REST Client in Java
+
+\textbf{Operazioni Preliminari}\\
+Ho creato la cartella \texttt{es30 - Client Java}, copiato i file necessari e avviato il server \texttt{serverHTTP-REST} (scritto in C).\\
+Successivamente, ho compilato il client in Java (\texttt{ClientREST.java}) e l'ho eseguito per effettuare la chiamata REST.
+
+\textbf{Risposte alle domande:}
+
+\begin{enumerate}
+    \item \textbf{Il fatto che il server sia fatto in C e il client in Java è un problema o un’opportunità? Perché?}\\
+    È senza dubbio una grandissima \textbf{opportunità} e rappresenta uno dei punti di forza fondamentali delle architetture REST e dei Web Service in generale: \textbf{l'interoperabilità e il disaccoppiamento}.
+    
+    Ecco perché:
+    \begin{itemize}
+        \item \textbf{Indipendenza dal Linguaggio e Piattaforma:} Utilizzando protocolli di rete standard (come \texttt{HTTP} su \texttt{TCP/IP}) e formati di scambio dati agnostici (come stringhe di testo o JSON), i due sistemi non hanno bisogno di condividere lo stesso ecosistema. "Parlano" entrambi la lingua universale di \texttt{HTTP}, decodificandola con le rispettive librerie standard.
+        \item \textbf{Scelta dello strumento migliore (Best Tool for the Job):} Permette agli sviluppatori di usare il linguaggio più adatto per ogni strato applicativo. Ad esempio, il server in C garantisce performance elevate, controllo a basso livello e basso overhead, mentre il client in Java offre portabilità estrema (Write Once, Run Anywhere) e librerie avanzate per eventuali interfacce grafiche (GUI) o integrazioni enterprise.
+        \item \textbf{Decoupling nello Sviluppo:} Team diversi possono sviluppare il backend e il frontend in completa autonomia lavorando con le proprie tecnologie preferite. Finché viene rispettato il "contratto" (l'API REST, ovvero l'endpoint, i parametri e la struttura della risposta), l'uso di linguaggi diversi sotto il cofano è totalmente trasparente all'altra parte.
+    \end{itemize}
+    Al contrario, se si usassero paradigmi RPC strettamente legati a uno specifico linguaggio (come Java RMI per Java), si sarebbe vincolati a impiegare la medesima tecnologia sia per il client che per il server, impedendo questo grado di flessibilità.
+\end{enumerate}
+
+\textbf{Comandi utili:}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+# Compila e avvia il server in C
+gcc serverHTTP-REST.c network.c -o serverHTTP-REST
+./serverHTTP-REST
+
+# In un altro terminale, compila ed esegui il client in Java
+javac ClientREST.java
+java ClientREST calcola-somma 4 5
+\end{lstlisting}
+\end{tcolorbox}
+
+\end{document}

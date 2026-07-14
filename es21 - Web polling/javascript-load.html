@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+  <iframe id="area" height="2000" width="1000"></iframe>
+
+
+  <script>
+    function reloadAnsa() {
+      // Si aggiunge un parametro timestamp fittizio per evitare la cache del browser e forzare il caricamento
+      var baseUrl = "https://www.ansa.it/sito/notizie/topnews/index.shtml";
+      document.getElementById("area").src = baseUrl + "?t=" + new Date().getTime();
+      console.log("Sito ricaricato alle " + new Date().toLocaleTimeString());
+    }
+
+    // Caricamento iniziale
+    reloadAnsa();
+
+    // Ricarica ogni 10 secondi (10000 millisecondi)
+    setInterval(reloadAnsa, 10000);
+  </script>
+
+</body>
+
+</html>

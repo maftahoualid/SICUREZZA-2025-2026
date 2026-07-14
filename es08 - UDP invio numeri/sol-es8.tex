@@ -1,0 +1,31 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+7) Compilare ed eseguire il secondo esempio
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Avviando poi in background il server \texttt{./serverUDP\_inc} e successivamente lanciando il client \texttt{./clientUDP\_inc}, il comportamento osservato in esecuzione è il seguente:
+
+\begin{itemize}
+    \item Il server si mette in ascolto sulla porta 35000.
+    \item Il client chiede in input un numero intero (es. ho inserito 42).
+    \item Il client invia l'intero al server.
+    \item Il server lo riceve, calcola \texttt{request + 1} (ottenendo 43) e lo rispedisce al client.
+    \item \textbf{Il client riceve la risposta dal server e stampa a video:} \texttt{[CLIENT] Contenuto: 43}. Entrambi i programmi, arrivati alla fine, terminano la loro esecuzione.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

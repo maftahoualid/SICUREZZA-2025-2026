@@ -1,0 +1,31 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+4) Sostituire ``127.0.0.1'' prima con ``localhost'' e poi con ``pippo'' e osservare cosa succede
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Ecco cosa succede se nel file \texttt{clientUDP.c} modifichiamo l'indirizzo di destinazione (attualmente ``127.0.0.1'') all'interno della chiamata a \texttt{UDPSend}:
+
+\begin{itemize}
+    \item \textbf{Sostituendo con ``localhost'':}
+    Non si osserva alcun cambiamento nel comportamento del programma. Il client e il server continueranno a comunicare correttamente. Questo accade perché la funzione di rete utilizzata sotto il cofano dalla libreria (\texttt{gethostbyname()}) interroga il sistema di risoluzione dei nomi (DNS locale o file \texttt{/etc/hosts}). Il nome ``localhost'' viene risolto automaticamente nell'indirizzo \texttt{IP} di loopback 127.0.0.1. Di conseguenza, i pacchetti arrivano a destinazione allo stesso identico modo.
+    
+    \item \textbf{Sostituendo con ``pippo'':}
+    Il client terminerà l'esecuzione con un errore (probabilmente in modo silenzioso o stampando un codice di errore, a seconda di come è gestita la libreria) prima di inviare il messaggio. Questo avviene perché la funzione \texttt{gethostbyname(``pippo'')} tenterà di risolvere l'hostname ``pippo'' in un indirizzo \texttt{IP}, ma fallirà (poiché ``pippo'' non è un nome noto nella rete locale, a meno di non averlo configurato manualmente nel file \texttt{/etc/hosts}). Andando a ispezionare la libreria \texttt{network.c}, si può notare che quando la risoluzione fallisce, la funzione \texttt{UDPSend} esegue una \texttt{exit(ERRHOST)} terminando brutalmente il processo. Il server, di conseguenza, rimarrà in perenne attesa del messaggio.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

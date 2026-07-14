@@ -1,0 +1,66 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Temi d'esame (per ognuno ragionare sulla scelta del protocollo di livello trasporto)
+\begin{itemize}
+    \item Implementare un servizio di calcolo remoto: il client spedisce al server in 3 distinti messaggi due numeri interi e il tipo di operatore (somma, sottrazione, moltiplicazione, divisione) e il server, dopo aver svolto il calcolo, restituisce il risultato al client che così termina la sua esecuzione.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Piano di Implementazione:} Servizio di Calcolo Remoto (es18)
+
+\textbf{1. Scelta del Protocollo di Trasporto}\\
+La traccia chiede di ragionare sulla scelta tra \texttt{UDP} e \texttt{TCP} per un servizio in cui il client invia i dati del calcolo suddivisi in 3 messaggi distinti (operando 1, operatore, operando 2).
+
+\textbf{Scelta obbligata (o fortemente raccomandata):} \texttt{TCP}
+
+\begin{itemize}
+    \item \textbf{Motivazione (Ordine di consegna):} Poiché i dati viaggiano su 3 messaggi separati, l'ordine in cui arrivano al server è fondamentale. \texttt{UDP} non garantisce la consegna in ordine: il server potrebbe ricevere prima l'operatore e poi il primo numero, confondendo la logica di ricezione. \texttt{TCP}, essendo orientato allo stream, garantisce la consegna ordinata.
+    \item \textbf{Motivazione (Affidabilità e Sessione):} Se un pacchetto \texttt{UDP} andasse perso, il server rimarrebbe bloccato in attesa di un "pezzo" del calcolo mancante (o peggio, leggerebbe il pezzo della richiesta di un altro client). \texttt{TCP} garantisce che, finché la connessione è aperta, i 3 messaggi arriveranno a destinazione completi. Inoltre, la connessione \texttt{TCP} fornisce un "tubo dedicato" (sessione) per il client: il server non rischia di mischiare il primo operando del Client A con il secondo operando del Client B.
+\end{itemize}
+Pertanto, l'implementazione proposta utilizzerà \texttt{TCP}.
+
+\textbf{2. Implementazione del Client (\texttt{clientTCP.c})}
+\begin{itemize}
+    \item Instaura una connessione \texttt{TCP} con il server (porta 35000).
+    \item Chiede in input all'utente il primo operando, l'operatore e il secondo operando.
+    \item Effettua tre distinte chiamate \texttt{TCPSend}:
+    \begin{itemize}
+        \item Invia operando1 (int)
+        \item Invia operatore (char)
+        \item Invia operando2 (int)
+    \end{itemize}
+    \item Effettua una \texttt{TCPReceive} per attendere il risultato (float).
+    \item Stampa il risultato e chiude la connessione.
+\end{itemize}
+
+\textbf{3. Implementazione del Server (\texttt{serverTCP.c})}
+\begin{itemize}
+    \item Crea un server \texttt{TCP} in ascolto sulla porta 35000.
+    \item In un ciclo infinito \texttt{while(1)}, accetta una nuova connessione (\texttt{acceptConnection}).
+    \item Effettua tre distinte chiamate \texttt{TCPReceive} sequenziali dal socket del client:
+    \begin{itemize}
+        \item Riceve operando1 (int)
+        \item Riceve operatore (char)
+        \item Riceve operando2 (int)
+    \end{itemize}
+    \item Calcola il risultato con uno \texttt{switch} (gestendo la divisione per zero).
+    \item Usa \texttt{TCPSend} per inviare il risultato al client.
+    \item Chiude il socket del client (\texttt{closeConnection}) e torna in ascolto per il prossimo client.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

@@ -1,0 +1,29 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Lanciare prima il server e poi il client. Cosa si osserva? Invertire la sequenza di lancio. Cosa si osserva?
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Ecco cosa si osserva nei due diversi casi, essendo la comunicazione basata su \texttt{UDP}, che è un protocollo connectionless (senza connessione):
+
+\begin{itemize}
+    \item \textbf{Lanciando prima il server e poi il client:} La comunicazione avviene con successo. Il server viene avviato e si mette in attesa (\texttt{UDPReceive}). Quando viene avviato il client, questo invia il suo messaggio al server e si mette in attesa della risposta. Il server riceve il pacchetto, stampa il contenuto a schermo e invia la risposta. Il client riceve la risposta dal server, la stampa e termina la sua esecuzione. Il server (grazie al ciclo \texttt{while(true)}) torna in attesa del prossimo client.
+    
+    \item \textbf{Invertendo la sequenza di lancio (prima il client e poi il server):} Si verifica un blocco (entrambi rimangono in attesa all'infinito). Quando il client viene avviato per primo, invia subito il pacchetto \texttt{UDP} verso la porta 35000 e si mette in attesa (\texttt{UDPReceive}) della risposta. Poiché il server non è ancora attivo, non c'è nessuna applicazione in ascolto su quella porta. Essendo \texttt{UDP} senza connessione e senza garanzia di consegna, l'invio va a buon fine dal punto di vista del client, ma il pacchetto viene scartato dal sistema operativo di destinazione (e perso). Quando successivamente viene avviato il server, questo si mette in attesa di nuovi messaggi. A questo punto entrambi i programmi si trovano bloccati indefinitamente nelle rispettive \texttt{UDPReceive}: il client aspetta una risposta a un messaggio andato perso, mentre il server aspetta un nuovo messaggio che il client non invierà mai più.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

@@ -1,0 +1,69 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Esercizio su Web Socket
+\begin{itemize}
+    \item Realizzazione di una chat eseguita dentro un browser web
+    \begin{itemize}
+        \item Fare riferimento al materiale apposito condiviso con gli studenti
+    \end{itemize}
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Soluzione Esercizio 28:} Web Socket Chat
+
+\textbf{Operazioni Preliminari}\\
+Ho copiato l'intera cartella \texttt{WebSocket\_Chat} fornita nel materiale didattico all'interno della directory \texttt{es28 - Web Socket Chat}. Questo progetto non è scritto in C, bensì sfrutta Node.js e la libreria \texttt{Socket.IO} per fornire funzionalità Real-Time.
+
+\textbf{Analisi dell'Architettura}\\
+L'applicazione è composta da due parti fondamentali che comunicano tra loro:
+
+\begin{enumerate}
+    \item \textbf{Backend (Server in Node.js):}
+    \begin{itemize}
+        \item Il file \texttt{server.js} utilizza il framework \texttt{express} per avviare un server in ascolto sulla porta 4000.
+        \item La prima cosa che fa il server è servire i file statici (l'interfaccia utente) presenti nella cartella \texttt{public}.
+        \item Successivamente, aggancia a questo server il modulo \texttt{socket.io}. Da questo momento il server è in grado di accettare richieste di "Protocol Upgrade": quando un client lo richiede, la connessione \texttt{HTTP} standard viene promossa a connessione WebSocket (un tunnel \texttt{TCP} persistente e bidirezionale).
+        \item Quando il server riceve un evento chiamato \texttt{message} da un qualsiasi client, usa l'istruzione \texttt{io.sockets.emit('UploadChat', data)} per prendere quel messaggio e "spargere la voce" (Broadcast) ritrasmettendolo istantaneamente a TUTTI i client collegati.
+    \end{itemize}
+
+    \item \textbf{Frontend (Client in Javascript):}
+    \begin{itemize}
+        \item All'interno di \texttt{public/chat.js}, il client apre una connessione WebSocket verso il server: \texttt{io.connect('http://localhost:4000')}.
+        \item Quando l'utente preme il tasto per inviare, il browser "emette" l'evento \texttt{message} verso il server.
+        \item Contestualmente, il browser si mette "in ascolto" di eventuali eventi \texttt{UploadChat} provenienti dal server. Appena ne riceve uno, il javascript manipola il DOM (aggiungendo codice HTML) per mostrare a schermo il nuovo messaggio ricevuto, aggiornando la chat in tempo reale senza dover ricaricare la pagina!
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Comandi per testare la Chat:}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+# Posizionati nella cartella
+cd "es28 - Web Socket Chat"
+
+# Installa le dipendenze (se non sono gia' presenti nella cartella node_modules)
+npm install
+
+# Avvia il server
+node server.js
+
+# Ora apri il tuo browser preferito e apri DUE schede diverse puntandole a:
+http://localhost:4000
+
+# Prova a scrivere un messaggio in una scheda e vedrai che comparira' magicamente in tempo reale anche sull'altra!
+\end{lstlisting}
+\end{tcolorbox}
+
+\end{document}

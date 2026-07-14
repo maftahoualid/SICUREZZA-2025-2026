@@ -1,0 +1,60 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Sommatrice UDP e perdita di pacchetti\\
+9) Usare la sommatrice su due macchine distinte provando, sulla macchina del client, a staccare il cavo di rete prima di un invio di un dato, ad es.
+\begin{itemize}
+    \item Digitare "2345" + INVIO
+    \item Digitare "5187" + INVIO
+    \item Staccare il cavo
+    \item Digitare "2" + INVIO
+    \item Riattaccare il cavo e aspettare 30 sec che il sistema operativo si riassesti
+    \item Digitare "1" + INVIO
+    \item "0"
+\end{itemize}
+\begin{itemize}
+    \item Che somma leggo? E' corretta?
+    \item Se il server gira su una macchina Linux (anche una macchina virtuale) e comunica con il client attraverso una rete WiFi oppure in loopback è possibile simulare la perdita di pacchetti bloccando e, dopo poco tempo, sbloccando la ricezione di pacchetti con i seguenti comandi:
+    \begin{itemize}
+        \item PER BLOCCARE: \texttt{sudo iptables -A INPUT -p udp --dport <porta\_del\_server> -j DROP}
+        \item PER SBLOCCARE: \texttt{sudo iptables -D INPUT -p udp --dport <porta\_del\_server> -j DROP}
+        \item Si consiglia di prepararsi questi comandi in una shell per poterli dare velocemente
+    \end{itemize}
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Questo esercizio dimostra in modo pratico una delle caratteristiche fondamentali del protocollo \texttt{UDP}: la sua inaffidabilità (best-effort delivery) e l'assenza di connessione.
+
+Rispondendo alle domande:
+
+\begin{itemize}
+    \item \textbf{Che somma leggo?} Leggerai la somma 7533 (derivata da 2345 + 5187 + 1).
+    \item \textbf{È corretta?} Dal punto di vista dell'utente non è corretta, in quanto manca il 2 (la somma attesa sarebbe dovuta essere 7535). Dal punto di vista del protocollo \texttt{UDP}, invece, è un comportamento del tutto normale.
+\end{itemize}
+
+Ecco cosa succede nel dettaglio e il perché di questo risultato:
+
+\begin{enumerate}
+    \item I primi due pacchetti (2345 e 5187) vengono inviati e raggiungono il server, che inizia ad accumulare la somma.
+    \item Quando scolleghi il cavo (o attivi la regola di iptables per far scartare (DROP) i pacchetti) e digiti 2, la funzione \texttt{UDPSend} nel codice del client non restituisce alcun errore. Per il client l'invio ha avuto successo, perché \texttt{UDP} non prevede alcun meccanismo di conferma di ricezione (ACK). Il pacchetto contenente il "2" viene semplicemente scartato dalla rete e perso per sempre (packet loss).
+    \item Quando riattacchi il cavo e invii 1 e 0, la rete è di nuovo operativa. Questi pacchetti raggiungono il server che li somma ai precedenti.
+    \item Quando arriva lo 0, il server risponde inviando il totale accumulato (7533) al client.
+\end{enumerate}
+
+Questo esercizio mette in luce che, qualora si utilizzi \texttt{UDP} per applicazioni che necessitano di garanzie di consegna, è necessario implementare i controlli di ricezione, numerazione dei pacchetti e ritrasmissione direttamente a livello applicativo, poiché \texttt{UDP} a livello di trasporto non offre nulla di tutto ciò.
+\end{tcolorbox}
+
+\end{document}

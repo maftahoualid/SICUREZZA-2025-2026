@@ -1,0 +1,29 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+6) Lanciare due volte il server usando due terminali. Cosa si osserva? Funzionano entrambi?
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Lanciando due volte il server su due terminali diversi per l'esercizio 6, si osserva il seguente comportamento:
+
+\begin{itemize}
+    \item \textbf{Si avviano entrambi senza mostrare errori:} Entrambi i processi stamperanno il messaggio "Sono in attesa di richieste..." e non apparirà il tipico errore di porta già occupata (Address already in use). Questo è possibile perché, se andiamo a ispezionare il sorgente della libreria \texttt{network.c}, la funzione \texttt{createUDPInterface} applica l'opzione \texttt{SO\_REUSEADDR} al socket prima di chiamare la funzione di sistema \texttt{bind()}. Questa opzione comunica al sistema operativo di consentire a più socket di mettersi in ascolto sulla medesima porta.
+    
+    \item \textbf{Funzionano entrambi? Solo parzialmente (solo uno riceverà i dati):} Sebbene entrambi siano apparentemente in funzione, quando il client invia un pacchetto \texttt{UDP} a quella porta, il sistema operativo lo consegnerà solo a uno dei due server (generalmente all'ultimo che è stato avviato in ordine temporale, o ripartendo le richieste, a seconda della gestione specifica di rete del kernel Linux). Poiché i messaggi inviati dal client sono indirizzati specificamente alla porta (pacchetti unicast e non multicast o broadcast), il pacchetto non verrà duplicato. L'esito pratico è che un server gestirà la richiesta e l'altro rimarrà in perenne attesa senza ricevere nulla.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

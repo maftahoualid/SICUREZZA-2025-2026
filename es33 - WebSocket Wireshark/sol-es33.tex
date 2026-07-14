@@ -1,0 +1,67 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Esercizio 0\\
+Effettuare una cattura Wireshark relativa al funzionamento della chat. Occorre attivare la cattura prima di aprire la URL dalla finestra del browser e ascoltare non solo sull’interfaccia di loopback ma anche su quella verso l’esterno (opzione ANY).
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Soluzione Esercizio 0:} Cattura Wireshark del funzionamento della chat
+
+\textbf{Operazioni Preliminari:}\\
+Ho creato la cartella dell'esercizio (\texttt{es33 - WebSocket Esercizio 0}) e vi ho copiato dentro tutto il codice sorgente del progetto "11 WebSocket\_Chat".
+
+\textbf{Analisi della cattura Wireshark:}\\
+Avviando una cattura di rete sull'interfaccia "ANY" (o di loopback \texttt{lo} se testiamo tutto in locale) e filtrando per la porta del nostro server (es. \texttt{tcp.port == 4000}), aprendo il browser e mandando un messaggio in chat si assisterà a una precisa sequenza di eventi di rete che dimostra il funzionamento e il passaggio da \texttt{HTTP} a WebSocket.
+
+Ecco cosa si vede passo per passo nei pacchetti:
+
+\begin{enumerate}
+    \item \textbf{FASE HTTP (Recupero File Statici)}
+    \begin{itemize}
+        \item Inizialmente si vedrà il classico "3-way handshake" del \texttt{TCP} (SYN, SYN-ACK, ACK) per stabilire la connessione con la porta 4000 del server Node.js.
+        \item Il browser invia una \texttt{HTTP GET /} per richiedere la pagina principale.
+        \item Il server Express risponde con un \texttt{HTTP/1.1 200 OK} che contiene il codice HTML della pagina.
+        \item Subito dopo, il browser invierà altre richieste \texttt{HTTP GET} per scaricare i file statici referenziati nell'HTML (come \texttt{/chat.js} e \texttt{/styles.css}).
+    \end{itemize}
+
+    \item \textbf{FASE DI UPGRADE (Il passaggio a WebSocket)}
+    \begin{itemize}
+        \item Il client (grazie all'istruzione \texttt{io.connect()} nel file JavaScript) inizializzerà una richiesta speciale verso il server. Nello specifico, invierà una richiesta \texttt{HTTP GET} contenente degli header molto particolari:
+        \begin{verbatim}
+Connection: Upgrade
+Upgrade: websocket
+Sec-WebSocket-Key: [chiave casuale]
+        \end{verbatim}
+        \item Se il server supporta WebSocket (come nel nostro caso grazie a Socket.IO), risponderà al browser con un pacchetto speciale: \texttt{HTTP/1.1 101 Switching Protocols}.
+        \item Negli header della risposta 101, il server confermerà l'avvenuto "cambio di lingua" ri-dichiarando \texttt{Upgrade: websocket} e rispondendo alla chiave di sicurezza.
+    \end{itemize}
+
+    \item \textbf{FASE WEBSOCKET (Comunicazione Bidirezionale in Real-Time)}
+    \begin{itemize}
+        \item Da questo momento in poi (dopo il pacchetto 101), Wireshark smetterà di classificare la conversazione come "HTTP". I pacchetti successivi sulla stessa connessione \texttt{TCP} saranno etichettati col protocollo "WebSocket".
+        \item Quando l'utente preme il bottone per inviare un messaggio nella chat, Wireshark mostrerà un pacchetto "WebSocket Text Frame".
+        \item Poiché la comunicazione non è cifrata (non stiamo usando WSS ma semplice WS), cliccando sul payload del pacchetto in Wireshark sarà possibile leggere in chiaro il messaggio inviato.
+        \item Essendo mediato dalla libreria Socket.IO, il testo nel payload apparirà con un piccolo prefisso numerico usato dal protocollo interno della libreria, seguito dal nostro oggetto JSON. Ad esempio:\\
+        \texttt{42["message", \{"sender":"Mario", "message":"Ciao a tutti!"\}]}
+        \item Subito dopo, si vedranno pacchetti WebSocket simili in direzione opposta (Server -> Client) che rappresentano il "broadcasting" dell'evento \texttt{UploadChat} verso gli altri client connessi per aggiornare le loro interfacce.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Conclusione:}\\
+\textbf{La cattura dimostra visivamente il più grande vantaggio dei WebSocket:} al contrario del polling \texttt{HTTP}, non c'è bisogno di instaurare continuamente nuove connessioni o inviare pesanti Header \texttt{HTTP} per ogni singolo messaggio. Una volta effettuato l'handshake e l'Upgrade (101 Switching Protocols), il tunnel \texttt{TCP} resta permanentemente aperto e i messaggi viaggiano al suo interno come frame leggerissimi e a bassissima latenza.
+\end{tcolorbox}
+
+\end{document}

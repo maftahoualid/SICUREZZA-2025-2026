@@ -1,0 +1,60 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Esercizio 3
+\begin{itemize}
+    \item Estendere il webservice \texttt{serverHTTP-REST.c} in modo che esponga un secondo servizio relativo al calcolo dei numeri primi compresi nell'intervallo $[min, max]$
+    \begin{itemize}
+        \item Si tragga spunto dal programma \texttt{prime-number-interval.c}
+    \end{itemize}
+    \item Estendere il file \texttt{ClientREST.java} in modo da poter chiamare, a scelta, entrambe le funzionalità della nuova API
+    \item Provare il client con il calcolo dei numeri primi compresi nell'intervallo $[1, 1000000]$
+    \begin{itemize}
+        \item Quanto tempo ci mette?
+        \item E' stato necessario tradurre l'algoritmo dei numeri primi in Java? Perché?
+    \end{itemize}
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Soluzione Esercizio 31:} Estensione del Webservice con Numeri Primi
+
+\textbf{Operazioni Preliminari}
+\begin{enumerate}
+    \item Ho copiato i file necessari nella cartella \texttt{es31 - Numeri Primi}.
+    \item Ho modificato il file \texttt{serverHTTP-REST.c} implementando un meccanismo di routing per intercettare l'URL \texttt{/calcola-primi}. Una volta intercettato, il server esegue l'algoritmo per i numeri primi (preso da \texttt{prime-number-interval.c}) e invia gradualmente la lista formattata in JSON tramite la socket \texttt{HTTP}.
+    \item Ho esteso il client in \texttt{ClientREST.java} aggiungendo un metodo \texttt{calcolaPrimi(int min, int max)} che si occupa di formattare l'URL e leggere le risposte del server (restituendo i dati riga per riga per non saturare la memoria in caso di payload enormi).
+    \item Ho compilato ed eseguito il server C in background e lanciato il client Java con il comando \texttt{time java ClientREST calcola-primi 1 1000000}.
+\end{enumerate}
+
+\textbf{Risposte alle domande:}
+
+\begin{enumerate}
+    \item \textbf{Provare il client con il calcolo dei numeri primi compresi nell'intervallo $[1, 1000000]$. Quanto tempo ci mette?}\\
+    Il tempo totale impiegato dall'esecuzione completa per calcolare un milione di numeri primi (con l'algoritmo non ottimizzato, O(N$^2$)) è stato di circa:
+    \begin{itemize}
+        \item \textbf{Tempo Reale (real):} 2 minuti e 19 secondi
+    \end{itemize}
+    Questo tempo dipende pesantemente dalla CPU della macchina su cui gira il server e dall'inefficienza dell'algoritmo (visto che calcola i moduli fino a i/2), ma dimostra chiaramente che il client è in grado di attendere e gestire connessioni prolungate fino a elaborazione conclusa.
+
+    \item \textbf{E' stato necessario tradurre l'algoritmo dei numeri primi in Java? Perché?}\\
+    \textbf{Assolutamente NO}.\\
+    Non è stato necessario tradurre una singola riga di logica matematica in Java. L'intero algoritmo di calcolo risiede ed è eseguito sul \textbf{server (in C)}.\\
+    \textbf{Il client Java funge esclusivamente da \textit{Stub}:} il suo unico compito è codificare i parametri nell'URL della richiesta GET, inoltrarla tramite \texttt{HTTP} e restare in ascolto sulla socket per leggere (deserializzare) il risultato.\\
+    Questo mette in evidenza un altro grande vantaggio dell'architettura REST (e delle architetture client-server basate su RPC): la \textbf{centralizzazione della Business Logic}. Il carico computazionale gravoso viene demandato a una macchina remota dedicata (il server C), senza che il client debba possedere le capacità o conoscere le regole per risolverlo, ma preoccupandosi solamente della presentazione all'utente.
+\end{enumerate}
+\end{tcolorbox}
+
+\end{document}

@@ -1,0 +1,62 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black},
+    numbers=none,
+    frame=single,
+    breaklines=true
+}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+7) Modificare il server in maniera che soddisfi 5 richieste prima di terminare
+\begin{itemize}
+    \item E se volessi che non terminasse mai?
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Ecco le risposte alle tue domande:
+
+\begin{itemize}
+    \item \textbf{Modificare il server per soddisfare 5 richieste prima di terminare:} Nel file \texttt{serverUDP.c}, ho sostituito il ciclo di ascolto infinito \texttt{while(true)} con un ciclo definito che itera esattamente 5 volte. Il codice del blocco di ascolto è diventato il seguente:
+\end{itemize}
+
+\begin{lstlisting}
+// Al posto di while(true)
+for(int i = 0; i < 5; i++) {
+    printf("[SERVER] Sono in attesa di richieste da qualche client\n");
+    UDPReceive(socket, request, MTU, hostAddress, &port);
+    // ... stampe ...
+    UDPSend(socket, response, strlen(response), hostAddress, port);
+}
+// Dopo aver servito i 5 client, il programma esce dal loop e il main() termina.
+\end{lstlisting}
+
+\begin{itemize}
+    \item \textbf{E se volessi che non terminasse mai?} Per avere un server che resta in ascolto perenne senza terminare mai (comportamento tipico dei server veri e propri, detti anche daemoni), si utilizza un ciclo infinito. Nel linguaggio C, questo si ottiene utilizzando costrutti condizionali perennemente verificati, come:
+    \begin{itemize}
+        \item \texttt{while(true)} (utilizzato nella versione originale, richiede la libreria \texttt{<stdbool.h>})
+        \item \texttt{while(1)} (costrutto tipico in C per indicare che la condizione non sarà mai 0)
+        \item \texttt{for(;;)} (ciclo for privo di condizioni di terminazione)
+    \end{itemize}
+    In questo modo il programma attenderà all'infinito un nuovo pacchetto sulla porta senza fermarsi mai, a meno che non venga interrotto forzatamente (es. chiudendo il terminale o premendo \texttt{Ctrl+C}).
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

@@ -1,0 +1,7 @@
+------geckoformboundary9b4a979238dcb75c8bfa6d92c5bb192f
+Content-Disposition: form-data; name="myfile"; filename="testfile.txt"
+Content-Type: text/plain
+
+Contenuto del file di prova
+
+------geckoformboundary9b4a979238dcb75c8bfa6d92c5bb192f--

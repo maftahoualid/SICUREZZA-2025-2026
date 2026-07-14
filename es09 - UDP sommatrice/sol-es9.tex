@@ -1,0 +1,36 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+8) Modificarlo per costruire una semplice sommatrice
+\begin{itemize}
+    \item Il client acquisisce ripetutamente da tastiera un numero intero e lo manda al server finché l'utente digita zero
+    \item Il server accumula in una variabile "somma" i valori mandati dal client finché il client manda zero
+    \item Quando il client manda zero il server risponde al client con la somma ottenuta
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Ho completato la trasformazione del codice in una "sommatrice \texttt{UDP}" operando sui sorgenti presenti nella cartella \texttt{es9} e li ho ricompilati.
+
+Ecco i dettagli delle modifiche implementate per soddisfare le specifiche:
+
+\begin{itemize}
+    \item \textbf{Modifiche al Client (\texttt{clientUDP\_inc.c}):} Ho racchiuso l'acquisizione da tastiera e l'invio del pacchetto all'interno di un ciclo \texttt{do-while} che ha come condizione di permanenza \texttt{request != 0}. In questo modo il client continua a richiedere numeri all'utente e a spedirli al server. Non appena l'utente digita 0, quest'ultimo valore viene inviato, il ciclo si interrompe e il client si mette in attesa (\texttt{UDPReceive}) del risultato finale.
+    
+    \item \textbf{Modifiche al Server (\texttt{serverUDP\_inc.c}):} Ho dichiarato una nuova variabile intera \texttt{int somma = 0;} per fungere da accumulatore. Anche in questo caso ho introdotto un ciclo \texttt{do-while} con la stessa condizione (\texttt{request != 0}). Ad ogni iterazione il server riceve un valore, lo stampa e lo somma all'accumulatore (\texttt{somma += request;}). Non appena riceve il numero 0 (che non altera la somma), il server esce dal ciclo e sfrutta una \texttt{UDPSend} per rispedire il valore finale calcolato (\texttt{somma}) al client.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

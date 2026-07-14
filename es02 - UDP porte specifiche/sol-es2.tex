@@ -1,0 +1,27 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+2) Modificare i sorgenti per mettere il server che riceve sulla porta 10000 e il client che trasmette dalla propria porta 30000 (ogni modifica dei sorgenti richiede una loro ricompilazione)
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\begin{itemize}
+    \item Modificato \texttt{serverUDP.c} per metterlo in ascolto sulla porta 10000 (\texttt{\#define SERVERPORT 10000}).
+    \item Modificato \texttt{clientUDP.c} per fare in modo che la sua socket venga creata sulla porta 30000 (\texttt{createUDPInterface(30000)}).
+    \item Modificato \texttt{clientUDP.c} affinché la \texttt{UDPSend} invii il pacchetto alla porta di destinazione 10000.
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}

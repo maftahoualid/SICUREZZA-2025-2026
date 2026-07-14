@@ -1,0 +1,242 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern} % Migliora il font, rendendolo più leggibile e meno sottile
+
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Configurazione globale per tutti i blocchi di codice
+\lstset{
+  basicstyle=\ttfamily, % Font monospace per il codice
+  breaklines=true, % A capo automatico
+  breakatwhitespace=false,
+  frame=single, % Riquadro attorno al codice
+  rulecolor=\color{black!30}, % Colore del riquadro
+  backgroundcolor=\color{black!5}, % Sfondo leggermente grigio
+  columns=fullflexible,
+  keepspaces=true
+}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstdefinelanguage{json}{
+    basicstyle=\ttfamily,
+    stringstyle=\color{red},
+    string=[s]{"}{"},
+    comment=[l]{:\ "},
+    morecomment=[l]{:"},
+    literate=
+     *{0}{{{\color{blue}0}}}{1}
+      {1}{{{\color{blue}1}}}{1}
+      {2}{{{\color{blue}2}}}{1}
+      {3}{{{\color{blue}3}}}{1}
+      {4}{{{\color{blue}4}}}{1}
+      {5}{{{\color{blue}5}}}{1}
+      {6}{{{\color{blue}6}}}{1}
+      {7}{{{\color{blue}7}}}{1}
+      {8}{{{\color{blue}8}}}{1}
+      {9}{{{\color{blue}9}}}{1}
+}
+\usepackage{hyperref}
+\usepackage{standalone} % Permette di includere file .tex che hanno \documentclass e \begin{document}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+
+\title{Sicurezza - Soluzione Esercizi (25-26)}
+\author{Oualid Maftah}
+\date{2026}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{UDP base e ordine avvio}
+\input{"es01 - UDP base e ordine avvio/sol-es1.tex"}
+\newpage
+
+\section{UDP porte specifiche}
+\input{"es02 - UDP porte specifiche/sol-es2.tex"}
+\newpage
+
+\section{UDP porte privilegiate}
+\input{"es03 - UDP porte privilegiate/sol-es3.tex"}
+\newpage
+
+\section{UDP localhost e hostname}
+\input{"es04 - UDP localhost e hostname/sol-es4.tex"}
+\newpage
+
+\section{UDP macchine diverse}
+\input{"es05 - UDP macchine diverse/sol-es5.tex"}
+\newpage
+
+\section{UDP riutilizzo porta}
+\input{"es06 - UDP riutilizzo porta/sol-es6.tex"}
+\newpage
+
+\section{UDP limite richieste}
+\input{"es07 - UDP limite richieste/sol-es7.tex"}
+\newpage
+
+\section{UDP invio numeri}
+\input{"es08 - UDP invio numeri/sol-es8.tex"}
+\newpage
+
+\section{UDP sommatrice}
+\input{"es09 - UDP sommatrice/sol-es9.tex"}
+\newpage
+
+\section{UDP sommatrice inaffidabilita}
+\input{"es10 - UDP sommatrice inaffidabilita/sol-es10.tex"}
+\newpage
+
+\section{UDP sommatrice multiclient}
+\input{"es11 - UDP sommatrice multiclient/sol-es11.tex"}
+\newpage
+
+\section{TCP base}
+\input{"es12 - TCP base/sol-es12.tex"}
+\newpage
+
+\section{TCP sommatrice}
+\input{"es13 - TCP sommatrice/sol-es13.tex"}
+\newpage
+
+\section{TCP sommatrice bloccante}
+\input{"es14 - TCP sommatrice bloccante/sol-es14.tex"}
+\newpage
+
+\section{TCP sommatrice affidabilita}
+\input{"es15 - TCP sommatrice affidabilita/sol-es15.tex"}
+\newpage
+
+\section{TCP trasferimento file}
+\input{"es16 - TCP trasferimento file/sol-es16.tex"}
+\newpage
+
+\section{UDP calcolo remoto}
+\input{"es17 - UDP calcolo remoto/sol-es17.tex"}
+\newpage
+
+\section{TCP calcolo remoto}
+\input{"es18 - TCP calcolo remoto/sol-es18.tex"}
+\newpage
+
+\section{TCP servizio telepass}
+\input{"es19 - TCP servizio telepass/sol-es19.tex"}
+\newpage
+
+\section{TCP terminale remoto}
+\input{"es20 - TCP terminale remoto/sol-es20.tex"}
+\newpage
+
+\section{Web polling}
+\input{"es21 - Web polling/sol-es21.tex"}
+\newpage
+
+\section{Web server}
+\input{"es22 - Web server/sol-es22.tex"}
+\newpage
+
+\section{Web form GET}
+\input{"es23 - Web form GET/sol-es23.tex"}
+\newpage
+
+\section{Web form POST}
+\input{"es24 - Web form POST/sol-es24.tex"}
+\newpage
+
+\section{Web server URL}
+\input{"es25 - Web server URL/sol-es25.tex"}
+\newpage
+
+\section{Upload file server web}
+\input{"es26 - Upload file server web/sol-es26.tex"}
+\newpage
+
+\section{Web server CGI}
+\input{"es27 - Web server CGI/sol-es27.tex"}
+\newpage
+
+\section{Web Socket Chat}
+\input{"es28 - Web Socket Chat/sol-es28.tex"}
+\newpage
+
+\section{Webservice}
+\input{"es29 - Webservice/sol-es29.tex"}
+\newpage
+
+\section{Client Java}
+\input{"es30 - Client Java/sol-es30.tex"}
+\newpage
+
+\section{Numeri Primi}
+\input{"es31 - Numeri Primi/sol-es31.tex"}
+\newpage
+
+\section{Thread REST}
+\input{"es32 - Thread REST/sol-es32.tex"}
+\newpage
+
+\section{WebSocket Wireshark}
+\input{"es33 - WebSocket Wireshark/sol-es33.tex"}
+\newpage
+
+\section{WebSocket Restyling}
+\input{"es34 - WebSocket Restyling/sol-es34.tex"}
+\newpage
+
+\section{WebSocket porta 80}
+\input{"es35 - WebSocket porta 80/sol-es35.tex"}
+\newpage
+
+\section{WebSocket rinomina eventi}
+\input{"es36 - WebSocket rinomina eventi/sol-es36.tex"}
+\newpage
+
+\section{WebSocket test dispositivi}
+\input{"es37 - WebSocket test dispositivi/sol-es37.tex"}
+\newpage
+
+\section{WebSocket typing}
+\input{"es38 - WebSocket typing/sol-es38.tex"}
+\newpage
+
+\section{MQTT retain}
+\input{"es39 - MQTT retain/sol-es39.tex"}
+\newpage
+
+\section{MQTT due sensori}
+\input{"es40 - MQTT due sensori/sol-es40.tex"}
+\newpage
+
+\section{MQTT temp e umidita}
+\input{"es41 - MQTT temp e umidita/sol-es41.tex"}
+\newpage
+
+\section{MQTT wireshark}
+\input{"es42 - MQTT wireshark/sol-es42.tex"}
+\newpage
+
+\section{MQTT messaggistica univr}
+\input{"es43 - MQTT messaggistica univr/sol-es43.tex"}
+\newpage
+
+\end{document}

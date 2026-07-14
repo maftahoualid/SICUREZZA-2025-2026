@@ -1,0 +1,33 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Esercizi su TCP\\
+11) Lanciare due volte il server usando due terminali. Cosa si osserva? Funzionano entrambi?
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+Essendo ora passati agli esercizi su \texttt{TCP}, il comportamento del programma è differente rispetto al precedente caso \texttt{UDP}.
+
+Lanciando due volte il server \texttt{TCP} (presente nella cartella es12) su due terminali, si osserva quanto segue:
+
+\begin{itemize}
+    \item \textbf{Il primo server funziona regolarmente:} si avvia, esegue il \texttt{bind()} e si mette in ascolto delle connessioni (\texttt{listen()}), stampando il messaggio di attesa a video.
+    \item Il secondo server NON funziona e termina immediatamente.
+\end{itemize}
+
+\textbf{Perché succede questo?} A differenza di quanto visto con \texttt{UDP}, nel protocollo \texttt{TCP} l'opzione del socket \texttt{SO\_REUSEADDR} ha un significato più stringente: serve esclusivamente a consentire il riutilizzo di una porta che si trova in stato di "TIME\_WAIT" (cioè una porta utilizzata da una connessione chiusa di recente dal sistema operativo). Tuttavia, \texttt{SO\_REUSEADDR} non consente a due programmi di mettersi contemporaneamente in stato di ascolto attivo (\texttt{listen}) sulla medesima porta e \texttt{IP}. Di conseguenza, il tentativo di eseguire la \texttt{bind()} da parte del secondo server andrà incontro a un errore (del tipo Address already in use) e, come previsto dalla gestione degli errori all'interno della funzione \texttt{createTCPServer} nel file \texttt{network.c}, causerà la chiusura immediata (terminazione silente tramite \texttt{exit()}) del secondo programma.
+\end{tcolorbox}
+
+\end{document}

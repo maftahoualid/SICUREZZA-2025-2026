@@ -1,0 +1,78 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Esercizio finale
+\begin{itemize}
+    \item Prendere in considerazione il file \texttt{clientThreadREST.java}
+    \begin{itemize}
+        \item Esso invoca \texttt{calcolaSomma()} in 3 thread concorrenti
+        \item Però la macchina su cui gira il server chiamato è la stessa e quindi non ci guadagno in prestazioni
+        \item Come si potrebbe modificare il codice in modo che le 3 invocazioni finiscano su 3 macchine diverse?
+        \item Bisogna modificare anche il codice del server?
+    \end{itemize}
+    \item Si riconsideri il servizio che calcola i numeri primi nell'intervallo $[min, max]$ costruito nell'esercizio precedente
+    \begin{itemize}
+        \item Si trovi un modo efficiente, sfruttando diversi server in rete, per calcolare i numeri primi tra 1 e 1000000
+        \item Di quanto migliorano le prestazioni?
+        \item Devo modificare anche il codice del server?
+    \end{itemize}
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Soluzione Esercizio 32:} Multithreading e Calcolo Parallelo Distribuito
+
+\textbf{Risposte alle domande:}
+
+\begin{enumerate}
+    \item \textbf{Come si potrebbe modificare il codice (del client) in modo che le 3 invocazioni finiscano su 3 macchine diverse?}\\
+    Basterebbe passare al costruttore \texttt{RESTAPI} (nel \texttt{main} di \texttt{ClientThreadREST.java}) gli indirizzi IP delle 3 macchine reali invece di passare \texttt{127.0.0.1} fisso a tutti e tre. Esempio:
+\begin{lstlisting}[language=Java, basicstyle=\ttfamily\small]
+RESTAPI service1 = new RESTAPI("192.168.1.10", args[0], args[1], args[2]);
+RESTAPI service2 = new RESTAPI("192.168.1.11", args[0], args[1], args[2]);
+RESTAPI service3 = new RESTAPI("192.168.1.12", args[0], args[1], args[2]);
+\end{lstlisting}
+
+    \item \textbf{Bisogna modificare anche il codice del server?}\\
+    Se le macchine sono 3 host fisici o virtuali separati in rete, \textbf{NO}. Si può semplicemente copiare lo stesso eseguibile \texttt{serverHTTP-REST} identico (che ascolta sulla porta 8000) sulle 3 macchine e avviarlo. Avendo IP diversi, non ci saranno conflitti.\\
+    \textit{(Tuttavia, se volessimo simulare il cluster testandolo in locale sulla nostra singola macchina loopback \texttt{127.0.0.1}, dovremmo modificare una riga del server per permettergli di ascoltare su porte diverse, es. 8000, 8001, 8002, per evitare il classico errore di rete "Address already in use").}\\
+    Il server che abbiamo costruito all'esercizio 31 accetta già due parametri arbitrari \texttt{param1} e \texttt{param2} nell'URL per estrarre \texttt{min} e \texttt{max}. Basterà unicamente che il client Java formuli gli URL con i parametri opportuni frammentati. La bellezza dei Web Service REST è proprio questa: finché l'interfaccia/endpoint non varia, la scalabilità e le logiche di partizionamento applicativo si possono gestire senza toccare l'implementazione del servizio vero e proprio.
+
+    \item \textbf{Si trovi un modo efficiente, sfruttando diversi server in rete, per calcolare i numeri primi tra 1 e 1000000.}\\
+    Il calcolo dei numeri primi è un problema altamente parallelizzabile (definito in gergo \textit{embarrassingly parallel}). Possiamo sfruttare i 3 thread del client per contattare i 3 server inviando a ciascuno un \textbf{sotto-intervallo} diverso da calcolare. Ad esempio, una ripartizione base potrebbe essere:
+    \begin{itemize}
+        \item \textbf{Thread 1 (Server A):} invoca l'intervallo $[1, 333333]$
+        \item \textbf{Thread 2 (Server B):} invoca l'intervallo $[333334, 666666]$
+        \item \textbf{Thread 3 (Server C):} invoca l'intervallo $[666667, 1000000]$
+    \end{itemize}
+
+    \item \textbf{Di quanto migliorano le prestazioni?}\\
+    Essendo il carico diviso su 3 macchine distinte che calcolano in perfetta contemporanea, il tempo si abbasserà drasticamente, ma il guadagno reale dipenderà da come vengono scelti gli intervalli.
+
+    \textit{L'importanza del bilanciamento del carico (Load Balancing):}\\
+    Poiché l'algoritmo C esegue un ciclo di divisioni fino a $i/2$, la sua complessità computazionale cresce in modo quadratico rispetto al valore dei numeri processati. Se usassimo la suddivisione lineare di base (333.333 elementi ciascuno), il Thread 3 (che calcola i numeri più alti) impiegherebbe molto più tempo del Thread 1, creando un "collo di bottiglia" che impedisce un miglioramento proporzionale.
+
+    \textbf{Ipotesi di partizionamento alternativo bilanciato (Ottimizzato):}\\
+    Per ottenere un bilanciamento perfetto in cui il carico (e quindi il tempo d'esecuzione) è identico per tutti e 3 i server, dobbiamo stringere gli intervalli man mano che i numeri si fanno più grandi. Sapendo che le operazioni totali per arrivare a N crescono proporzionalmente a N$^2$, per dividere il lavoro (N=1.000.000) in 3 porzioni equivalenti (ognuna contenente il 33\% del numero totale di divisioni effettuate dalle CPU), si possono calcolare le soglie matematiche con la radice quadrata:
+    \begin{itemize}
+        \item \textbf{Thread 1 (Server A):} invoca l'intervallo $[1, 577350]$ \textit{(gestisce la fetta più ampia di numeri, ma molto veloci da processare)}
+        \item \textbf{Thread 2 (Server B):} invoca l'intervallo $[577351, 816496]$ \textit{(fetta intermedia)}
+        \item \textbf{Thread 3 (Server C):} invoca l'intervallo $[816497, 1000000]$ \textit{(fetta più ristretta, compensando l'altissimo costo di processamento di numeri vicini al milione)}
+    \end{itemize}
+    Adottando questa ripartizione ponderata dal lato client, le 3 macchine finiranno di elaborare quasi nello stesso identico istante, sfruttando appieno il parallelismo e ottenendo l'ideale riduzione del tempo di elaborazione totale esattamente a 1/3 (il 33\%)!
+\end{enumerate}
+\end{tcolorbox}
+
+\end{document}

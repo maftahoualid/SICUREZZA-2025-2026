@@ -1,0 +1,60 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+14) Usare la sommatrice TCP su due macchine distinte provando, sulla macchina del client, a staccare il cavo di rete prima di un invio di un dato, ad es.
+\begin{itemize}
+    \item Digitare "2345" + INVIO
+    \item Digitare "5187" + INVIO
+    \item Staccare il cavo
+    \item Digitare "2" + INVIO
+    \item Riattaccare il cavo e aspettare 30 sec che il sistema operativo si riassesti
+    \item Digitare "1" + INVIO
+    \item "0"
+\end{itemize}
+Che somma leggo? E' corretta?
+\begin{itemize}
+    \item NOTA: Se il server gira su una macchina Linux (anche una macchina virtuale) e comunica con il client attraverso una rete WiFi oppure in loopback è possibile simulare la perdita di pacchetti bloccando e, dopo poco tempo, sbloccando la ricezione di pacchetti con i seguenti comandi:
+    \begin{itemize}
+        \item PER BLOCCARE: \texttt{sudo iptables -A INPUT -p tcp --dport <porta\_del\_server> -j DROP}
+        \item PER SBLOCCARE: \texttt{sudo iptables -D INPUT -p tcp --dport <porta\_del\_server> -j DROP}
+        \item Si consiglia di prepararsi questi comandi in una shell a parte per poterli dare velocemente
+    \end{itemize}
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+A differenza di quanto accaduto nell'analogo esercizio svolto con \texttt{UDP} (Esercizio 9), in questo caso la situazione cambia radicalmente grazie all'affidabilità garantita dal protocollo \texttt{TCP}.
+
+Rispondendo alle tue domande:
+
+\begin{itemize}
+    \item \textbf{Che somma leggo?} Leggerai la somma 7535 (che deriva da 2345 + 5187 + 2 + 1).
+    \item \textbf{È corretta?} Sì, è assolutamente corretta. Nessun dato è andato perso.
+\end{itemize}
+
+Cosa è successo dietro le quinte?
+
+\begin{enumerate}
+    \item I primi due invii (2345 e 5187) avvengono normalmente.
+    \item Quando scolleghi il cavo (o attivi la regola di drop su iptables) e invii il "2", la funzione \texttt{TCPSend} accoda il dato nel buffer di trasmissione locale e il sistema operativo prova a spedirlo. Non ricevendo il pacchetto di conferma (ACK) dal server a causa dell'assenza di rete, \texttt{TCP} non scarta il pacchetto, ma lo conserva nel buffer e avvia un timer. Scaduto il timer, \texttt{TCP} effettuerà automaticamente una serie di ritrasmissioni a intervalli di tempo crescenti.
+    \item Quando riattacchi il cavo, la connettività si ripristina. Alla successiva ritrasmissione automatica, il pacchetto contenente il "2" raggiungerà finalmente il server (con un leggero ritardo, invisibile all'applicazione se non per l'attesa).
+    \item Digitando successivamente "1" e "0", anche questi verranno consegnati, sempre garantendo l'ordine corretto di arrivo.
+    \item Il server riceverà tutti i numeri nella sequenza esatta, senza perdersi alcun pezzo, calcolerà il totale e lo restituirà al client.
+\end{enumerate}
+
+A meno che il cavo non rimanga staccato per un tempo lunghissimo (tipicamente svariati minuti, portando la connessione in timeout e causando un errore irreversibile sul socket), \texttt{TCP} è in grado di "riparare" autonomamente questo genere di guasti temporanei di rete senza che lo sviluppatore debba scrivere una singola riga di codice aggiuntiva.
+\end{tcolorbox}
+
+\end{document}
