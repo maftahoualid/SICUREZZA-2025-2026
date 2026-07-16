@@ -1,0 +1,6 @@
+Un semplice web server
+● Aprire il file serverHTTP.c in Esempi-web/ e analizzarne il contenuto
+● Compilarlo come nell’esercitazione sull’interfaccia socket ed eseguirlo
+● Provare ad aprire un secondo terminale nella stessa cartella e a rilanciare lo stesso server. Funziona? Perché?
+● Aprire il browser preferito e impostare la URL “http://127.0.0.1:8000/” Cosa si vede sul browser e sul terminale?
+● Aprire il browser preferito e impostare la URL “http://localhost:8000/” Cosa cambia?

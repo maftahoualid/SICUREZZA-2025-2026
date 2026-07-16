@@ -1,0 +1,34 @@
+Esercizio
+● Considerare la cartella Webservice/
+● Aprire il file serverHTTP-REST.c e analizzarne il contenuto
+● Compilarlo come al solito ed eseguirlo
+● Aprire il file clientREST-GET.c e analizzarne il contenuto
+● Compilarlo come al solito ed eseguirlo
+– Che parametri devo passare in linea di comando?
+– Cosa si può vedere analizzando lo scambio di dati tramite Wireshark?
+– Qual è la signature della funzione calcolaSomma() sul server e sul client? Perché ha senso che siano uguali?
+
+Esercizio 2
+● Prendere in considerazione il file ClientREST.java
+– Dopo aver installato l’ambiente base di Java (già presente in Lab Delta) si può compilare con javac ClientREST.java
+– Ed eseguire con java ClientREST
+● Il fatto che il server sia fatto in C e il client in Java è un problema o un’opportunità? Perché?
+
+Esercizio 3
+● Estendere il webservice serverHTTP-REST.c in modo che esponga un secondo servizio relativo al calcolo dei numeri primi compresi nell’intervallo [min, max]
+– Si tragga spunto al programma prime-number-interval.c
+● Estendere il file ClientREST.java in modo da poter chiamare, a scelta, entrambe le funzionalità della nuova API
+● Provare il client con il calcolo dei numeri primi compresi nell’intervallo [1, 1000000]
+– Quanto tempo ci mette?
+– E’ stato necessario tradurre l’algoritmo dei numeri primi in Java? Perché?
+
+Esercizio finale
+● Prendere in considerazione il file clientThreadREST.java
+– Esso invoca calcolaSomma() in 3 thread concorrenti
+– Però la macchina su cui gira il server chiamato è la stessa e quindi non ci guadagno in prestazioni
+– Come si potrebbe modificare il codice in modo che le 3 invocazioni finiscano su 3 macchine diverse?
+– Bisogna modificare anche il codice del server?
+● Si riconsideri consideri il servizio che calcola i numeri primi nell’intervallo [min, max] costruito nell’esercizio precedente
+– Si trovi un modo efficiente, sfruttando diversi server in rete, per calcolare il numeri primi tra 1 e 1000000
+– Di quanto migliorano le prestazioni?
+– Devo modificare anche il codice del server?

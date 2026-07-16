@@ -1,0 +1,15 @@
+● Partendo dall’esercizio mostrato nelle istruzioni, cosa succede se pubblico una temperatura prima
+di aver lanciato il subscriber?
+– Provare il publisher con l’opzione --retain
+● Partendo dall’esercizio mostrato nelle istruzioni creare un’applicazione pub/sub con 2 sensori di
+temperatura relativi a 2 stanze diverse. Quante finestre di terminale devo aprire?
+● Partendo dall’esercizio precedente come fare per avere un unico subscriber per entrambe le
+temperature? Come si fa a distinguere da quale stanza proviene la temperatura?
+● Prova a pubblicare un valore di umidità relativa (topic “UR”); il subscriber interessato alle
+temperature lo riceve? Come si fa a creare un subscriber interessato all’umidità? Costruire
+un’applicazione pub/sub con 4 finestre per produrre e visualizzare sia valori di temperatura sia
+valori di umidità.
+● Aprire e studiare con Wireshark il file PCAP contenuto nello ZIP
+– Quale protocollo di livello trasporto utilizza MQTT? Quali sono le porte?
+– Trovare le fasi di publish e subscribe. Quante connessioni TCP apre un subscriber? Quante connessioni
+TCP apre un publisher?

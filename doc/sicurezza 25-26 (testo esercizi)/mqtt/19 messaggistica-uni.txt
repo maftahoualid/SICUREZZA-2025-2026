@@ -1,0 +1,6 @@
+Si vuole costruire con MQTT un servizio di messaggistica
+universitaria
+– Il rettore può leggere tutti i messaggi
+– La segreteria può leggere i messaggi dai docenti e dagli studenti
+– I docenti possono leggere i messaggi dai docenti e dagli studenti
+– Gli studenti possono leggere solo i messaggi degli altri studenti

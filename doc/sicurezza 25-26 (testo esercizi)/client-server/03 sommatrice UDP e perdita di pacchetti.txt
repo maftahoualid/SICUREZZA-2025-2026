@@ -1,0 +1,18 @@
+Sommatrice UDP e perdita di pacchetti
+
+9) Usare la sommatrice su due macchine distinte provando, sulla macchina del client, a staccare il cavo di rete prima di un
+invio di un dato, ad es.
+– Digitare “2345” + INVIO
+– Digitare “5187” + INVIO
+– Staccare il cavo
+– Digitare “2” + INVIO
+– Riattaccare il cavo e aspettare 30 sec che il sistema operativo si riassesti
+– Digitare “1” + INVIO
+– “0”
+● Che somma leggo? E’ corretta?
+● Se il server gira su una macchina Linux (anche una macchina virtuale) e comunica con il client attraverso una rete WiFi
+oppure in loopback è possibile simulare la perdita di pacchetti bloccando e, dopo poco tempo, sbloccando la ricezione di
+pacchetti con i seguenti comandi:
+– PER BLOCCARE: sudo iptables -A INPUT -p udp --dport <porta_del_server> -j DROP
+– PER SBLOCCARE: sudo iptables -D INPUT -p udp --dport <porta_del_server> -j DROP
+– Si consiglia di prepararsi questi comandi in una shell per poterli dare velocemente

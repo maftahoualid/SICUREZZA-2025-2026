@@ -1,0 +1,8 @@
+Esercizio per casa
+● Modificare il server web serverHTTP.c in modo che accetti con il metodo POST un intero file da salvare nella cartella del server (il cosiddetto “upload sul server”).
+● Suggerimenti:
+– utilizzare il file form-file.html con serverHTTP.c non modificato ed analizzare il contenuto della connessione TCP con Wireshark in modo da capire nella richiesta HTTP
+● Dove si trova il nome del file
+● Dove si trova il contenuto del file
+– Nella lettura della richiesta HTTP sul server aggiungere il codice che salva il file prendendo spunto dal codice usato nell’esercizio del trasferimento di file
+– Invece la risposta HTTP può essere molto statica come nella versione originale di serverHTTP.c

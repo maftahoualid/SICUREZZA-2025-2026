@@ -1,0 +1,2 @@
+Esercizio
+● Scrivere e provare una pagina HTML che ricarica periodicamente il sito dell’ANSA

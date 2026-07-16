@@ -1,0 +1,9 @@
+Esercizio
+● Modificare il file serverHTTP.c in modo che, invece di restituire sempre la solita pagina web di prova, restituisca una delle pagine html usate dal lucido 9 in poi scelta attraverso l’uso del browser.
+● Suggerimenti:
+– Provare a fare la nuova richiesta col browser usando il serverHTTP.c in modo da vedere la richiesta HTTP per capire dove si trova la stringa con il nome del file nella richiesta che fa il browser (aiutarsi anche con Wireshark)
+● Cosa devo scrivere nella barra del browser?
+– Capire come recuperare la stringa con il nome del file dalla richiesta HTTP (si veda esempio-parser.c)
+– Per costruire la risposta riciclare parte del codice usato nell’esercizio del trasferimento di file
+● Prova finale: cosa succede se chiedo al server di restituire i file form-get.html e form-post.html ?
+

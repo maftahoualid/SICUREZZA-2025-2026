@@ -1,0 +1,36 @@
+
+
+Esercizio 0
+Effettuare una cattura Wireshark relativa al funzionamento della chat. Occorre attivare la cattura prima di aprire la
+URL dalla finestra del browser e ascoltare non solo sull’interfaccia di loopback ma anche su quella verso l’esterno
+(opzione ANY).
+
+Esercizio 1
+Modificare a piacimento il contenuto del file public/index.html e valutarne l’impatto grafico.
+
+Esercizio 2
+Modificare il sorgente del codice in modo da far ascoltare il server sulla porta 80 invece che 4000. Quali altri
+accorgimenti sono necessari per farlo funzionare: lato server? Lato client?
+
+Esercizio 3
+Modificare il sorgente del codice in modo da cambiare nome ai seguenti eventi
+message → messaggio
+UploadChat → aggiornamento
+
+Esercizio 4
+Se si dispone di due PC in grado di dialogare sulla stessa rete IP (oppure un PC per il server e uno smartphone per
+il client sempre in grado di dialogare tra loro a livello IP) provare ad accedere al server che è su Linux mediante
+diversi tipi di browser e di sistemi operativi. Cosa si può notare?
+
+Esercizio 5
+Modificare il sorgente del codice per fare in modo che ad ogni utente connesso alla chat arrivi nella console il
+messaggio “l‘utente sta scrivendo...” .
+NOTA: Lato client, bisogna spedire al server un evento apposito (ad es. “typing”) quando l’utente scrive sulla
+tastiera (catturando l’evento di sistema “keydown”). Lato server, la chiamata webSocket.broadcast.emit(‘typing’,
+data) rilancia l’evento “typing” a tutti i client connessi tranne che a quello dalla quale si è ricevuto il messaggio.
+Lato client occorre infine gestire la ricezione del messaggio “typing” che arriva dal server (vedere gestione del
+messaggio “UploadChat”).
+
+Esercizio 6 (manca l'esercizio chat in tcp nel lab client-server)
+Pensando all’esercizio sulla chat dell’esercitazione sulla programmazione mediante socket, quali
+differenze/vantaggi/svantaggi si hanno con le tecnologie impiegate in questa esercitazione?

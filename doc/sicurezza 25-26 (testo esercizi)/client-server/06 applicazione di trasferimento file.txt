@@ -1,0 +1,11 @@
+applicazione di trasferimento file
+
+● Il client chiede al server un file specificandone il nome
+● Il server lo trasmette un byte alla volta
+● Il client lo salva in locale con lo stesso nome
+● Quale protocollo usiamo?
+● [Da fare solo con i PC del Lab Delta] Lanciare client e server su due 
+macchine diverse, trasferire un file di grosse dimensioni in modo da 
+avere il tempo di staccare e riattaccare il cavo di rete per un breve tempo 
+durante il trasferimento.
+Cosa succede al file trasferito?

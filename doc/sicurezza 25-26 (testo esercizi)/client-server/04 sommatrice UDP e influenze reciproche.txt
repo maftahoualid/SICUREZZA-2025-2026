@@ -1,0 +1,20 @@
+sommatrice UDP e influenze reciproche
+
+10)
+
+● Invocare il server della sommatrice con due client diversi (tutti e tre possono 
+anche essere sulla stessa macchina ovviamente su finestre terminali diverse), ad 
+es.
+● Che somma leggo da ciascun client? E’ la somma che ciascun client da solo si 
+aspetterebbe?
+
+Client A:
+● Digitare “2345” + INVIO
+● Digitare “5187” + INVIO
+● Digitare “2” + INVIO
+● Digitare “1” + INVIO
+● “0”
+Client B:
+● Digitare “2” + INVIO
+● Digitare “8” + INVIO
+● “0”

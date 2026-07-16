@@ -1,0 +1,10 @@
+Esercizi su UDP
+
+7) Compilare ed eseguire il secondo esempio
+8) Modificarlo per costruire una semplice sommatrice
+– Il client acquisisce ripetutamente da tastiera un numero intero e lo
+manda al server finché l’utente digita zero
+– Il server accumula in una variabile “somma” i valori mandati dal client
+finché il client manda zero
+– Quando il client manda zero il server risponde al client con la somma
+ottenuta

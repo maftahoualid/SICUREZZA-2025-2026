@@ -1,0 +1,22 @@
+Esercizi basati su clientUDP e serverUDP
+
+1) Lanciare prima il server e poi il client. Cosa si osserva? Invertire la sequenza di lancio. Cosa si
+osserva?
+
+2) Modificare i sorgenti per mettere il server che riceve sulla porta 10000 e il client che trasmette
+dalla propria porta 30000 (ogni modifica dei sorgenti richiede una loro ricompilazione)
+
+3) Mettere il server in ascolto sulla porta 100 e osservare cosa succede
+● Bisogna modificare anche il client? Dove?
+● Per chi usa il proprio PC con Linux o una virtual machine Linux, lanciare il server con il comando “sudo ./serverUDP” e
+osservare cosa cambia
+
+4) Sostituire “127.0.0.1” prima con “localhost” e poi con “pippo” e osservare cosa succede
+
+5) [Da fare solo se in Lab Delta] Accordarsi per lavorare su coppie di macchine in modo che
+server e client siano su macchine diverse. Come bisogna modificare i sorgenti?
+
+6) Lanciare due volte il server usando due terminali. Cosa si osserva? Funzionano entrambi?
+
+7) Modificare il server in maniera che soddisfi 5 richieste prima di terminare
+● E se volessi che non terminasse mai?

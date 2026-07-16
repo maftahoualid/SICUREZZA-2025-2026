@@ -1,0 +1,7 @@
+Esempio di web server esteso con gestione CGI
+● Aprire il file serverHTTP-CGI.c in Esempi-web/ e analizzarne il contenuto
+● Compilarlo come al solito ed eseguirlo
+● Aprire il browser preferito e il file sommatrice-web.html
+– Cosa si vede sul browser?
+– NOTA: Provare con numeri positivi, negativi, con parte decimale…
+● A cosa corrisponde il secondo parametro della funzione sommatrice() ?

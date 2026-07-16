@@ -1,0 +1,3 @@
+Esercizio su Web Socket
+● Realizzazione di una chat eseguita dentro un browser web
+– Fare riferimento al materiale apposito condiviso con gli studenti
