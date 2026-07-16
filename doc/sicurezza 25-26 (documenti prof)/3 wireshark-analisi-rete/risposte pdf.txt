@@ -1,0 +1,227 @@
+[Esercizio 1] 
+
+1. Che tipo di protocollo di livello Data-link è utilizzato? Come fa Wireshark a capirlo?
+
+Il tipo di protocollo di Liv2 è Ethernet II. Wireshark, per capirlo, 
+analizza l'header fornito direttamente dal driver dell'interfaccia di rete.
+
+2. Disegnare la PDU di livello Data-link indicando il valore dei vari campi.
+
+[Preamblolo] [Start Frame Delimiter Byte] [Destination MAC] [Source MAC] 
+[Payload protocol type] [Payload] [Frame Check Sequence]
+
+3. Qual è il MAC sorgente? Di che tipo è: unicast o broadcast?
+
+Il MAC sorgente è : TyanComputer_24:dd:64 (00:e0:81:24:dd:64)
+E' di tipo unicast 
+
+4. Qual è il MAC destinazione? Di che tipo è: unicast o broadcast?
+
+Il MAC destinazione è : Broadcast (ff:ff:ff:ff:ff:ff)
+E' di tipo broadcast
+
+5. Che tipo di protocollo di livello Network è utilizzato? Come fa Wireshark a capirlo?
+
+Il tipo di protocollo di Liv3 è IPv4. 
+Wireshark lo deduce leggendo il campo EtherType ( IPv4 : 0x0800 ) 
+all'interno dell'header Ethernet precedente.
+
+6. Qual è la lunghezza dell'header IP?
+
+Il header IP è lungo 20 Byte 
+
+7. Quali sono gli indirizzi IP sorgente e destinazione?
+
+Sorgente: 157.27.252.223
+Destinazione: 157.27.252.255
+
+8. Che tipo di protocollo di livello trasporto è contenuto in IP? Come fa Wireshark a capirlo?
+
+Il protocollo di Liv4 contenuto in IP è UDP
+Wireshark lo capisce leggendo il campo Protocol dentro l'header IP ( UDP : 17 )
+
+9. Quali sono le porte sorgente e destinazione a livello trasporto?
+
+Porta Sorgente : 631
+Porta Destinazione : 631 
+
+10. Creare un filtro per visualizzare solo i pacchetti che hanno ARP come protocollo
+
+"arp"
+
+11. Dopo aver applicato il filtro precedente qual è la percentuale di pacchetti che rimangono
+visualizzati rispetto al totale?
+
+173 su 272 (63.6%)
+
+12. Creare un filtro per visualizzare solo i pacchetti che hanno destinazione MAC
+00:01:e6:57:4b:e0.
+
+"eth.dst == 00:01:e6:57:4b:e0"
+
+13. Dopo aver applicato il filtro precedente qual è la percentuale di pacchetti che rimangono
+visualizzati rispetto al totale?
+
+1 su 272 (0.4%)
+
+14. Creare un filtro per visualizzare solo i pacchetti che hanno destinazione MAC broadcast.
+
+"eth.dst == ff:ff:ff:ff:ff:ff"
+
+15. Dopo aver applicato il filtro precedente qual è la percentuale di pacchetti che rimangono
+visualizzati rispetto al totale? Sono molti? Perché?
+
+228 su 272 (83.8%)
+
+Sono molti perchè in una rete locale protocolli di servizio come ARP inviano continuamente richieste Broadcast
+
+
+
+
+[Esercizio 2] 
+
+1. Colorare di rosso tutti i pacchetti che contengono UDP e di verde tutti i pacchetti che
+contengono TCP.
+
+Visualizza -> Regole di Colorazione -> Drag & Drop
+
+2. Cosa contengono i primi due pacchetti della sessione di cattura?
+[1]
+IP Sorgente : 157.27.252.202
+IP Destinazione : 157.27.10.10
+Protocollo Trasporto : UDP
+Protocollo Applicazione : DNS 
+[2]
+IP Sorgente : 157.27.10.10
+IP Destinazione : 157.27.252.202
+Protocollo Trasporto : UDP
+Protocollo Applicazione : DNS 
+
+Wireshark lo capisce perché intercetta il traffico sulla porta 53 
+(quella standard per DNS) e analizza il payload specifico
+
+in [1] il client chiede "Qual'è l'IP di www.polito.it" (standard query)
+in [2] il server risponde fornendo "130.192.73.1" in (standard query response)
+
+3. Prendere in considerazione il pacchetto n. 3.
+
+[3]
+IP Sorgente : 157.27.252.202, 
+IP Destinazione : 130.192.73.1
+Protocollo Trasporto : TCP
+
+IP sorgente e destinazione sono in qualche modo collegati con i messaggi scambiati a
+livello applicazione nei primi due pacchetti? È possibile fare delle ipotesi su cosa serve il
+protocollo di livello applicazione dei primi due pacchetti?
+
+L'IP Destinazione di [3] è uguale a quello fornito dal server DNS in risposta alla query per "www.polito.it"
+I primi due pacchetti servivano quindi a risolvere il nome a dominio per permettere al client di sapere a quale indirizzo IP fisico inviare la richiesta web.
+
+4. Prendere in considerazione il pacchetto n. 6.
+
+[6]
+IP Sorgente : 157.27.252.202
+IP Destinazione : 130.192.73.1
+Protocollo Trasporto : TCP ( campo Protocol in IP )
+Protocollo Applicazione : HTTP ( porta 80 in TCP )
+
+Perché prima della trasmissione del primo messaggio HTTP c'è lo scambio di tre
+pacchetti puramente TCP? Quali sono i flag settati nell'header TCP di questi tre
+pacchetti?
+
+TCP è un protocollo affidabile e orientato alla connessione, quindi prima di inviare i dati HTTP veri e propri, deve "sincronizzarsi" col server.
+Flag: 
+[3] SYN
+[4] SYN, ACK
+[5] ACK
+
+4. Creare un filtro per visualizzare solo i pacchetti TCP (compresi i pacchetti HTTP) e
+determinarne il numero.
+
+"tcp"
+807 tcp su 823 tot (98.1%)
+
+5. Creare un filtro per visualizzare solo i pacchetti TCP (esclusi i pacchetti HTTP) e
+determinarne il numero.
+
+"tcp and not http" or "tcp && !http"
+673 tcp !http su 823 tot (81.8%) 
+673 tcp !http su 807 tcp (83.4%)
+
+A cosa servono tali pacchetti?
+Servono a gestire la connessione (l'handshake iniziale, 
+le conferme di ricezione o ACK per i dati ricevuti 
+e il rilascio della connessione FIN)
+
+Se il protocollo DNS dei pacchetti 1 e 2 avesse usato il protocollo TCP, quanti pacchetti
+IP sarebbero stati generati? Sarebbe stato utile?
+
+Ne sarebbero serviti 7 :  
+3 per l'handshake, 
+2 per query e risposta, 
+3 per la chiusura
+Sarebbe stato un overhead inutile 
+
+6. Selezionare il pacchetto 3 e seguire lo stream TCP col comando da menu Analyze/Follow
+TCP Stream.
+
+Cosa si può leggere?
+richiesta GET / HTTP/1.1 effettuata dal tuo browser, 7
+e la risposta del server (HTTP/1.0 200 OK) seguito dalla pagina HTML
+
+Qual è il messaggio contenuto nel payload della PDU di livello Applicazione?
+E' il codice HTML della pagina principale del portale istituzionale del politecnico di Torino 
+
+
+
+
+[Esercizio 3] 
+
+1. Elencare i protocolli di livello Applicazione che entrano in azione in questa cattura
+classificandoli in base al livello Trasporto utilizzato.
+
+DNS (53), FTP (21), HTTP (80), SSH (22), TCP
+
+2. Provare ad analizzare diversi stream TCP con sopra diversi protocolli di livello applicazione.
+
+Fatto per FTP, HTTP, SSH
+
+3. Che differenza c’è tra il contenuto trasmesso in una connessione TCP per il protocollo FTP e
+quello trasmesso per il protocollo SSH?
+
+TCP è in chiaro mentre SSH dopo il setup è cifrato
+
+
+
+
+[Esercizio 4] 
+
+1. Individuare le richieste ping inviate e le relative risposte. Quante sono?
+
+22: 11 richieste e 11 risposte
+
+2. Quali sono IP sorgente e destinazione della richiesta ICMP? A quale ente o azienda sono
+intestati?
+
+Source Address: 157.27.143.46 (WHOIS:  RIPE Network Coordination Centre)
+Destination Address: 216.58.211.196 (WHOIS: Google LLC)
+
+3. Provare a invocare il comando ping dal proprio PC verso www.google.com e verso il
+proprio Default Gateway (come faccio a sapere il suo IP?) e osservare il RTT medio e la sua
+variazione. Chi mostra la media più grande? Perché? Chi mostra la variazione più grande?
+Perché?
+
+verso Google - RTT medio: 53ms (min 39ms, mas 76ms)
+verso Router - RTT medio: 3ms (min 3ms, max 6ms)
+
+la media e la variazione più grandi li ha il ping verso google 
+perché verso il router deve fare pochi salti e la rete 
+solitamente è più prevedibile, mentre internet 
+è una strada molto più congestionata e dinamica
+
+[Esercizio 6]
+
+Indirizzo IPv6 locale rispetto al collegamento . : fe80::4d9f:b7a9:c04f:b722%3
+Indirizzo IPv4. . . . . . . . . . . . : 192.168.0.106
+Subnet mask . . . . . . . . . . . . . : 255.255.255.0
+Gateway predefinito . . . . . . . . . : 192.168.0.1
