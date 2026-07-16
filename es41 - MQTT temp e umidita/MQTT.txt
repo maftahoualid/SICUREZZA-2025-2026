@@ -1,0 +1,36 @@
+Analisi dei comandi per MQTT e Socket C (Istruzioni Installazione MQTT)
+
+Di seguito sono illustrati tutti i comandi da terminale citati nel documento per configurare il PC e utilizzare il protocollo MQTT.
+
+1. Gestione del Terminale e Rete
+exit: (Windows) Chiude la finestra del prompt dei comandi. In Linux si ottiene lo stesso risultato premendo CTRL-d.
+ipconfig /all: (Windows) Mostra la configurazione dettagliata di tutte le interfacce di rete del PC per trovare l'indirizzo IP.
+ifconfig -a: (Linux/macOS) Equivalente a ipconfig. Mostra le informazioni sulle interfacce di rete.
+sudo apt update: (Linux/Ubuntu) Aggiorna l'elenco dei pacchetti software disponibili.
+sudo apt install net-tools: (Linux/Ubuntu) Installa il pacchetto net-tools (che contiene il comando ifconfig).
+
+2. Editor di Testo e Compilatore C
+gedit: (Linux) Avvia l'editor di testo grafico "gedit".
+sudo apt install gedit: (Linux/Ubuntu) Installa l'editor di testo "gedit".
+gcc: (Linux/Cygwin) Richiama il compilatore GNU C.
+sudo apt install build-essential: (Linux/Ubuntu) Installa i pacchetti essenziali per la compilazione (incluso gcc).
+gcc -o programma-eseguibile hello.c: Compila il file hello.c e crea l'eseguibile rinominandolo programma-eseguibile.
+./programma-eseguibile: (Linux) Esegue il programma compilato nella cartella corrente. In Windows si lancia direttamente scrivendo programma-eseguibile.exe.
+
+3. Installazione e Gestione del Broker MQTT (Mosquitto)
+sudo apt install mosquitto: (Linux/Ubuntu) Installa il broker Mosquitto.
+brew install mosquitto: (macOS) Installa il broker Mosquitto tramite Homebrew.
+sudo systemctl start mosquitto (o sudo service mosquitto start): (Linux) Avvia il servizio del broker Mosquitto in background.
+sudo systemctl status mosquitto: (Linux) Mostra lo stato del servizio Mosquitto.
+sudo systemctl stop mosquitto (o sudo service mosquitto stop): (Linux) Ferma il servizio del broker Mosquitto.
+net start mosquitto: (Windows) Avvia il servizio Mosquitto (da prompt con privilegi di Amministratore).
+net stop mosquitto: (Windows) Ferma il servizio Mosquitto (da prompt con privilegi di Amministratore).
+
+4. Utilizzo dei Client MQTT (Publisher e Subscriber)
+sudo apt install mosquitto-clients: (Linux/Ubuntu) Installa i programmi a riga di comando mosquitto_pub e mosquitto_sub.
+cd "c:\Program Files\mosquitto": (Windows) Cambia la directory posizionandosi in quella di installazione di Mosquitto (per poter usare i file .exe).
+mosquitto_sub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud -p 8883 -u univr-studenti -P MQTT-esercitazione2026 -t temperatura: Avvia un Subscriber in ascolto sul cloud HiveMQ per il topic "temperatura".
+mosquitto_pub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud -p 8883 -u univr-studenti -P MQTT-esercitazione2026 -t temperatura -m "24": Avvia un Publisher che invia il messaggio "24" sul topic "temperatura" nel cloud HiveMQ.
+mosquitto_pub -m "38" -t "temperatura": Pubblica il messaggio "38" sul topic "temperatura" (esempio base in locale).
+mosquitto_pub -m "100" -t "glicemia": Pubblica il messaggio "100" sul topic "glicemia" (esempio base in locale).
+CTRL-c: Termina l'esecuzione in ascolto del Subscriber.

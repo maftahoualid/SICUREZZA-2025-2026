@@ -1,0 +1,35 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Esercizio 2\\
+Modificare il sorgente del codice in modo da far ascoltare il server sulla porta 80 invece che 4000. Quali altri accorgimenti sono necessari per farlo funzionare: lato server? Lato client?
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Esercizio 35 - WebSocket porta 80}
+
+\textbf{Lato Server}\\
+In sistemi Unix-like (come Linux e macOS), le porte al di sotto della 1024 sono considerate porte "privilegiate" o "well-known". Per far sì che un programma possa mettersi in ascolto sulla porta 80, sono necessari permessi di amministratore. Di conseguenza, il comando per avviare il server non sarà più solamente "node server.js", ma dovrà essere eseguito con i privilegi di root, ad esempio:\\
+\texttt{sudo node server.js}\\
+(In alternativa, si possono concedere all'eseguibile di node le capabilities per fare bind su porte privilegiate usando: \texttt{setcap cap\_net\_bind\_service=+ep /path/to/node}).
+
+\textbf{Lato Client}\\
+Dal punto di vista dell'utente finale, per connettersi alla chat non sarà più necessario specificare il numero di porta nell'URL del browser (la porta 80 è quella predefinita per il protocollo \texttt{HTTP}). L'indirizzo da visitare sarà semplicemente "\texttt{http://localhost/}" (oppure l'indirizzo IP del server).\\
+Per quanto riguarda il codice JavaScript del client (\texttt{public/chat.js}), la chiamata per instaurare la connessione WebSocket è attualmente:\\
+\texttt{var webSocket = io.connect();}\\
+Poiché questa chiamata non specifica esplicitamente un host e una porta, la libreria \texttt{socket.io} utilizzerà automaticamente lo stesso host e la stessa porta da cui è stata scaricata la pagina HTML (ovvero la porta 80). Pertanto, non è necessario apportare alcuna modifica al codice lato client per farlo funzionare. Se invece il codice avesse utilizzato un URL hard-coded come "\texttt{io.connect('http://localhost:4000')}", sarebbe stato necessario modificarlo o rimuovere l'URL.
+\end{tcolorbox}
+
+\end{document}

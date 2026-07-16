@@ -1,0 +1,123 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Si vuole costruire con MQTT un servizio di messaggistica universitaria:
+\begin{itemize}
+    \item Il rettore può leggere tutti i messaggi
+    \item La segreteria può leggere i messaggi dai docenti e dagli studenti
+    \item I docenti possono leggere i messaggi dai docenti e dagli studenti
+    \item Gli studenti possono leggere solo i messaggi degli altri studenti
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Soluzione esercizio MQTT - es43}
+
+\textbf{Obiettivo:} Costruire un servizio di messaggistica universitaria con MQTT rispettando specifici permessi di lettura per i vari ruoli.
+
+Per risolvere questo problema, la soluzione ottimale consiste nel definire una gerarchia di topic basata sul mittente (chi genera il messaggio). Possiamo definire la seguente struttura di topic radice:\\
+\texttt{messaggi/<ruolo\_mittente>}
+
+I possibili topic in cui i vari utenti andranno a pubblicare saranno quindi:
+\begin{itemize}
+    \item \texttt{messaggi/rettore}
+    \item \texttt{messaggi/segreteria}
+    \item \texttt{messaggi/docenti}
+    \item \texttt{messaggi/studenti}
+\end{itemize}
+
+In base alle regole imposte dall'esercizio, ecco come si dovranno configurare le iscrizioni (subscribers) per ciascun ruolo:
+
+\begin{enumerate}
+    \item \textbf{IL RETTORE}\\
+    \textbf{Regola:} Può leggere tutti i messaggi.\\
+    \textbf{Soluzione:} Il rettore si iscriverà utilizzando il carattere jolly "\texttt{\#}" per intercettare qualsiasi messaggio sotto la radice "\texttt{messaggi/}".\\
+    \textbf{Topic di sottoscrizione:} \texttt{messaggi/\#}
+
+    \item \textbf{LA SEGRETERIA}\\
+    \textbf{Regola:} Può leggere i messaggi dai docenti e dagli studenti.\\
+    \textbf{Soluzione:} La segreteria dovrà iscriversi a due topic separati (si può fare lanciando il client con due flag \texttt{-t}).\\
+    \textbf{Topic di sottoscrizione:} \texttt{messaggi/docenti} e \texttt{messaggi/studenti}
+
+    \item \textbf{I DOCENTI}\\
+    \textbf{Regola:} Possono leggere i messaggi dai docenti e dagli studenti.\\
+    \textbf{Soluzione:} Esattamente come la segreteria, i docenti si iscriveranno a questi due topic.\\
+    \textbf{Topic di sottoscrizione:} \texttt{messaggi/docenti} e \texttt{messaggi/studenti}
+
+    \item \textbf{GLI STUDENTI}\\
+    \textbf{Regola:} Possono leggere solo i messaggi degli altri studenti.\\
+    \textbf{Soluzione:} Gli studenti si iscriveranno in ascolto unicamente sul topic dedicato a loro.\\
+    \textbf{Topic di sottoscrizione:} \texttt{messaggi/studenti}
+\end{enumerate}
+
+\noindent\rule{\textwidth}{0.4pt}
+\textbf{COMANDI PRATICI DA ESEGUIRE SUL TERMINALE}\\
+(I comandi utilizzano il broker remoto HiveMQ indicato negli esercizi precedenti)
+
+\textbf{>>> COMANDI PER LEGGERE (SUBSCRIBER) <<<}
+
+Rettore (ascolta tutto):
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_sub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "messaggi/#" -v
+\end{lstlisting}
+
+Segreteria e Docenti (ascoltano docenti e studenti):
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_sub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "messaggi/docenti" -t "messaggi/studenti" -v
+\end{lstlisting}
+
+Studenti (ascoltano solo studenti):
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_sub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "messaggi/studenti" -v
+\end{lstlisting}
+
+\textbf{>>> COMANDI PER SCRIVERE (PUBLISHER) <<<}
+
+Pubblicare come Rettore:
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_pub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "messaggi/rettore" -m "Avviso dal Rettore"
+\end{lstlisting}
+
+Pubblicare come Segreteria:
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_pub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "messaggi/segreteria" -m "Avviso dalla Segreteria"
+\end{lstlisting}
+
+Pubblicare come Docenti:
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_pub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "messaggi/docenti" -m "Lezione annullata"
+\end{lstlisting}
+
+Pubblicare come Studenti:
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_pub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "messaggi/studenti" -m "Cerco appunti"
+\end{lstlisting}
+\end{tcolorbox}
+
+\end{document}

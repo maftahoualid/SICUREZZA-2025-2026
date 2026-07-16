@@ -1,0 +1,48 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Esercizio 3\\
+Modificare il sorgente del codice in modo da cambiare nome ai seguenti eventi:
+\begin{itemize}
+    \item \texttt{message} $\rightarrow$ \texttt{messaggio}
+    \item \texttt{UploadChat} $\rightarrow$ \texttt{aggiornamento}
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Esercizio 36 - Rinomina Eventi WebSocket}
+
+\textbf{Modifiche effettuate al codice sorgente:}
+
+\begin{enumerate}
+    \item \textbf{Lato Server (\texttt{server.js}):}
+    \begin{itemize}
+        \item Modificato l'evento in ascolto da \texttt{'message'} a \texttt{'messaggio'}:\\
+        \texttt{webSocket.on('messaggio', function(data) \{ ... \});}
+        \item Modificato l'evento emesso in broadcast da \texttt{'UploadChat'} a \texttt{'aggiornamento'}:\\
+        \texttt{io.sockets.emit('aggiornamento', data);}
+    \end{itemize}
+
+    \item \textbf{Lato Client (\texttt{public/chat.js}):}
+    \begin{itemize}
+        \item Modificato il nome dell'evento inviato al click del pulsante da \texttt{'message'} a \texttt{'messaggio'}:\\
+        \texttt{webSocket.emit('messaggio', \{ ... \});}
+        \item Modificato il nome dell'evento in ascolto per ricevere i messaggi da \texttt{'UploadChat'} a \texttt{'aggiornamento'}:\\
+        \texttt{webSocket.on('aggiornamento', function(data) \{ ... \});}
+    \end{itemize}
+\end{enumerate}
+\end{tcolorbox}
+
+\end{document}

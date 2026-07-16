@@ -1,0 +1,39 @@
+**DOMANDA:**
+● Aprire e studiare con Wireshark il file PCAP contenuto nello ZIP
+– Quale protocollo di livello trasporto utilizza MQTT? Quali sono le porte?
+– Trovare le fasi di publish e subscribe. Quante connessioni TCP apre un
+subscriber? Quante connessioni
+TCP apre un publisher?
+
+**Risposta:**
+
+Soluzione esercizio `MQTT` - es42 (Analisi PCAP)
+
+**Domanda 1:** Quale protocollo di livello trasporto utilizza `MQTT`? Quali sono le porte?
+Risposta 1:
+`MQTT` utilizza il protocollo di livello trasporto `TCP`. 
+La porta standard utilizzata (come si vede dal file PCAP) è la 1883 per le connessioni in chiaro (non cifrate). Qualora si utilizzasse `MQTT` over TLS (comunicazione cifrata), la porta standard sarebbe la 8883.
+
+**Domanda 2:** Trovare le fasi di publish e subscribe. Quante connessioni `TCP` apre un subscriber? Quante connessioni `TCP` apre un publisher?
+Risposta 2:
+Entrambi i client (publisher e subscriber) instaurano esattamente 1 sola connessione `TCP` con il broker per svolgere il proprio lavoro.
+- **Il Subscriber apre 1 singola connessione `TCP` persistente:** esegue il 3-way handshake, invia il messaggio `MQTT` di "Connect Command", riceve il "Connect Ack", dopodiché invia la "Subscribe Request" e mantiene aperta quella stessa connessione `TCP` per rimanere in ascolto dei futuri messaggi.
+- **Il Publisher apre anch'esso 1 singola connessione `TCP`:** esegue l'handshake, si connette ("Connect Command"), invia il dato ("Publish Message") e al termine invia una richiesta di disconnessione ("Disconnect Req"), chiudendo subito dopo la singola connessione `TCP` utilizzata.
+
+**Domanda 3:** Documentare i comandi utilizzati per aprire e analizzare sia da interfaccia grafica che utilizzando la CLI.
+Risposta 3:
+
+--- Analisi da Interfaccia Grafica (Wireshark) ---
+Puoi aprire il file lanciando da terminale:
+wireshark mqtt-localhost.pcapng
+
+Una volta aperta l'interfaccia di Wireshark, per isolare immediatamente e studiare le fasi esatte di publish e subscribe ignorando il rumore di fondo, è sufficiente scrivere nella barra dei filtri in alto (Display Filter) la parola chiave:
+mqtt
+(e poi premere Invio).
+
+--- Analisi da riga di comando (CLI) ---
+Se vuoi analizzare il PCAP interamente da riga di comando usando TShark (la versione CLI di Wireshark), il comando per filtrare solo i pacchetti `MQTT` è:
+tshark -r mqtt-localhost.pcapng -Y "mqtt"
+
+In alternativa, se tshark non è disponibile, puoi usare il classico tcpdump per visualizzare tutti i pacchetti `TCP` scambiati sulla porta 1883:
+tcpdump -r mqtt-localhost.pcapng -n port 1883

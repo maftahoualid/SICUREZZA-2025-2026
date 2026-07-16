@@ -1,0 +1,79 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+\begin{itemize}
+    \item Partendo dall'esercizio mostrato nelle istruzioni creare un'applicazione pub/sub con 2 sensori di temperatura relativi a 2 stanze diverse. Quante finestre di terminale devo aprire?
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Soluzione esercizi MQTT - Due sensori}
+
+\textbf{Domanda:} Partendo dall'esercizio mostrato nelle istruzioni creare un'applicazione pub/sub con 2 sensori di temperatura relativi a 2 stanze diverse. Quante finestre di terminale devo aprire?
+
+\textbf{Risposta:}\\
+Devi aprire un totale di \textbf{3} finestre di terminale:
+\begin{itemize}
+    \item \textbf{1 finestra} per il Subscriber (che si metterà in ascolto dei dati provenienti da entrambe le stanze).
+    \item \textbf{1 finestra} per il Publisher del Sensore 1 (Stanza 1).
+    \item \textbf{1 finestra} per il Publisher del Sensore 2 (Stanza 2).
+\end{itemize}
+\textbf{(Nota:} non serve una finestra per il broker poiché stiamo usando quello remoto in cloud su HiveMQ).
+
+Ecco i comandi da inserire nelle 3 finestre:
+
+\textbf{--- Finestra 1: SUBSCRIBER ---}\\
+Per metterti in ascolto su entrambe le stanze, puoi usare il carattere jolly "\texttt{\#}" (che include tutti i sotto-topic di "temperatura"), e l'opzione "\texttt{-v}" (verbose) per stampare a schermo anche il nome del topic oltre al valore.
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_sub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "temperatura/#" -v
+\end{lstlisting}
+
+\textbf{--- Finestra 2: PUBLISHER (Sensore Stanza 1) ---}\\
+Pubblica un valore di temperatura (es. 22) sul topic specifico della stanza 1.
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_pub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "temperatura/stanza1" -m "22"
+\end{lstlisting}
+
+\textbf{--- Finestra 3: PUBLISHER (Sensore Stanza 2) ---}\\
+Pubblica un valore di temperatura (es. 24) sul topic specifico della stanza 2.
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_pub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "temperatura/stanza2" -m "24"
+\end{lstlisting}
+
+\textbf{Domanda:} Partendo dall'esercizio precedente, come fare per avere un unico subscriber per entrambe le temperature? Come si fa a distinguere da quale stanza proviene la temperatura?
+
+\textbf{Risposta:}
+\begin{enumerate}
+    \item \textbf{Come avere un unico subscriber per entrambe le temperature:}\\
+    Per ricevere i messaggi da più topic simultaneamente utilizzando un solo subscriber, si utilizzano i "wildcard" (caratteri jolly) nei topic. Se i publisher pubblicano sui topic \texttt{temperatura/stanza1} e \texttt{temperatura/stanza2}, il subscriber può iscriversi al topic \texttt{temperatura/\#} (wildcard multi-livello) oppure \texttt{temperatura/+} (wildcard a singolo livello). In questo modo, intercetterà tutti i messaggi pubblicati in qualsiasi sotto-categoria di "temperatura". (Come mostrato già nel comando del subscriber nella Parte 1).
+
+    \item \textbf{Come distinguere da quale stanza proviene la temperatura:}\\
+    Di default, \texttt{mosquitto\_sub} stampa a schermo solamente il "payload" del messaggio (il valore numerico, ad es. "22" o "24"), rendendo impossibile capire da quale stanza provenga. Per ovviare a questo problema, bisogna lanciare il comando \texttt{mosquitto\_sub} aggiungendo l'opzione \texttt{-v} (che sta per "verbose"). In modalità verbose, il client stampa sia il topic completo sia il messaggio.
+    
+    Output di esempio che vedrai sul terminale:
+\begin{verbatim}
+temperatura/stanza1 22
+temperatura/stanza2 24
+\end{verbatim}
+\end{enumerate}
+\end{tcolorbox}
+
+\end{document}

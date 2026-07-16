@@ -1,0 +1,60 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+Esercizio 5\\
+Modificare il sorgente del codice per fare in modo che ad ogni utente connesso alla chat arrivi nella console il messaggio ``l'utente sta scrivendo...'' .
+
+NOTA: Lato client, bisogna spedire al server un evento apposito (ad es. ``typing'') quando l'utente scrive sulla tastiera (catturando l'evento di sistema ``keydown''). Lato server, la chiamata \texttt{webSocket.broadcast.emit('typing', data)} rilancia l'evento ``typing'' a tutti i client connessi tranne che a quello dalla quale si è ricevuto il messaggio. Lato client occorre infine gestire la ricezione del messaggio ``typing'' che arriva dal server (vedere gestione del messaggio ``UploadChat'').
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Esercizio 38 - Segnalazione "l'utente sta scrivendo..."}
+
+\textbf{Modifiche effettuate al codice sorgente:}
+
+\begin{enumerate}
+    \item \textbf{Lato Client (\texttt{public/chat.js}):}
+    \begin{itemize}
+        \item È stato aggiunto un listener (\texttt{'keydown'}) sull'input testuale per intercettare la pressione dei tasti. Quando l'utente digita, viene emesso un evento \texttt{'typing'} inviando al server il nome del mittente:
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+message.addEventListener('keydown', function(){
+    webSocket.emit('typing', sender.value);
+});
+\end{lstlisting}
+        \item È stato aggiunto un listener per gestire l'evento \texttt{'typing'} in arrivo dal server. Per evitare che il messaggio sovrascriva eventuali altri utenti che stanno digitando contemporaneamente, viene verificato se la stringa è già presente nel div "feedback" e, se non lo è, viene aggiunta (accodata) e viene scritto un log nella console:
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+webSocket.on('typing', function(data){
+    if (feedback.innerHTML.indexOf(data + ' sta scrivendo') === -1) {
+        feedback.innerHTML += '<p><em>' + data + ' sta scrivendo...</em></p>';
+        console.log(data + " sta scrivendo...");
+    }
+});
+\end{lstlisting}
+        \textbf{(Nota:} L'evento \texttt{'UploadChat'} preesistente pulisce già il div "feedback" azzerandone il contenuto quando un messaggio viene effettivamente inviato, rimuovendo quindi la scritta "sta scrivendo...").
+    \end{itemize}
+
+    \item \textbf{Lato Server (\texttt{server.js}):}
+    \begin{itemize}
+        \item È stata aggiunta la gestione dell'evento \texttt{'typing'}. Quando il server lo riceve, usa la funzione "broadcast" per re-inviare lo stesso evento a tutti gli altri client connessi, escludendo il client mittente:
+\begin{lstlisting}[language=JavaScript, basicstyle=\ttfamily\small]
+webSocket.on('typing', function(data){
+    webSocket.broadcast.emit('typing', data);
+});
+\end{lstlisting}
+    \end{itemize}
+\end{enumerate}
+\end{tcolorbox}
+
+\end{document}

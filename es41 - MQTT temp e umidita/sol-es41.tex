@@ -1,0 +1,62 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\begin{document}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=\textbf{DOMANDA}, breakable]
+\begin{itemize}
+    \item Prova a pubblicare un valore di umidità relativa (topic ``UR''); il subscriber interessato alle temperature lo riceve? Come si fa a creare un subscriber interessato all'umidità? Costruire un'applicazione pub/sub con 4 finestre per produrre e visualizzare sia valori di temperatura sia valori di umidità.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\textbf{RISPOSTA}, breakable]
+\textbf{Soluzione esercizio MQTT - es41}
+
+\textbf{Domanda 1:} Prova a pubblicare un valore di umidità relativa (topic "UR"); il subscriber interessato alle temperature lo riceve?\\
+\textbf{Risposta 1:} No, il subscriber non lo riceve. Il protocollo MQTT si basa su un filtraggio rigoroso tramite i topic. Un subscriber iscritto al topic "temperatura" (o "temperatura/\#") ignorerà completamente tutti i messaggi pubblicati su topic differenti, come "UR".
+
+\textbf{Domanda 2:} Come si fa a creare un subscriber interessato all'umidità?\\
+\textbf{Risposta 2:} Bisogna lanciare un nuovo client \texttt{mosquitto\_sub} specificando come argomento per il parametro \texttt{-t} il topic dell'umidità, ovvero "UR".
+
+\textbf{Domanda 3:} Costruire un'applicazione pub/sub con 4 finestre per produrre e visualizzare sia valori di temperatura sia valori di umidità.\\
+\textbf{Risposta 3:} Per avere un sistema completo servono 4 terminali separati. Di seguito i comandi da inserire in ciascuna finestra (utilizzando sempre il broker cloud di HiveMQ):
+
+\textbf{--- Finestra 1: SUBSCRIBER TEMPERATURA ---}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_sub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "temperatura/#" -v
+\end{lstlisting}
+
+\textbf{--- Finestra 2: SUBSCRIBER UMIDITA' ---}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_sub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "UR/#" -v
+\end{lstlisting}
+
+\textbf{--- Finestra 3: PUBLISHER TEMPERATURA ---}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_pub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "temperatura/stanza1" -m "22"
+\end{lstlisting}
+
+\textbf{--- Finestra 4: PUBLISHER UMIDITA' ---}
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\small]
+mosquitto_pub -h e0d996a0720a4a25ae1a34becc9e8a90.s1.eu.hivemq.cloud \
+              -p 8883 -u univr-studenti -P MQTT-esercitazione2026 \
+              -t "UR/stanza1" -m "60"
+\end{lstlisting}
+\end{tcolorbox}
+
+\end{document}
