@@ -1,0 +1,827 @@
+Università di Verona, Dipartimento di Informatica
+
+Programmazione e Sicurezza di Rete
+
+Configurazione di una rete
+Per le esercitazioni di questa parte del corso, utilizzeremo un simulatore chiamato NetSimk, che
+potete scaricare liberamente all'indirizzo http://www.netsimk.com.
+In ambiente Linux, l'eseguibile viene lanciato automaticamente da Wine.
+L'interfaccia si presenta come la seguente figura
+
+Le configurazioni di rete che vengono create posso essere salvate su un file. Il file può essere
+ricaricato successivamente per riprendere a lavorare da dove si era rimasti.
+
+1
+
+Indice
+1 Switching di base..............................................................................................................................3
+1.1.Obiettivi.....................................................................................................................................3
+1.2.Esercizio.....................................................................................................................................3
+1.2.1 Comandi principali............................................................................................................6
+1.2.2 Comandi importanti in modalità privilegiata....................................................................6
+1.2.3 Comandi importanti in modalità configurazione terminale..............................................7
+1.2.4 Comandi importanti in modalità configurazine interfaccia..............................................7
+1.3.Osservazioni conclusive............................................................................................................7
+2 VLAN BASE....................................................................................................................................8
+2.1.Obiettivi.....................................................................................................................................8
+2.2.Esercizio.....................................................................................................................................8
+2.2.1 Configurazione degli switch.............................................................................................9
+2.3.Osservazioni conclusive...........................................................................................................11
+3 Intra VLAN routing........................................................................................................................12
+3.1.Obiettivi...................................................................................................................................12
+3.2.Esercizio...................................................................................................................................12
+3.3. Osservazioni conclusive.........................................................................................................13
+4 DHCP.............................................................................................................................................14
+4.1.Obiettivi...................................................................................................................................14
+4.2.Esercizio...................................................................................................................................14
+4.3.Osservazioni conclusive..........................................................................................................16
+5 Routing...........................................................................................................................................17
+5.1.Obiettivi...................................................................................................................................17
+5.2.Esercizio...................................................................................................................................17
+5.3.Osservazioni conclusive..........................................................................................................19
+6 NAT................................................................................................................................................20
+6.1.Obiettivi...................................................................................................................................20
+6.2.Esercizio...................................................................................................................................20
+6.3.Osservazioni conclusive..........................................................................................................22
+
+2
+
+1 Switching di base
+1.1. Obiettivi
+Configurazione di una piccola rete composta da 4 PC e 3 switch. In particolare, si dovranno
+eseguire i seguenti passi:
+•
+
+Creazione di 3 switch;
+
+•
+
+Creazione di 4 PC;
+
+•
+
+Connessione dei PC agli switch;
+
+•
+
+Connessione degli switch tra loro.
+
+1.2. Esercizio
+Aprite il simulatore.
+Dalla lista dei Device trascinate lo switch modello 2950 24+2 nella finestra di lavoro. Ora, dal
+gruppo Host, trascinare un oggetto PC nella finestra di lavoro. (Per dare un nome al PC premere
+tasto destro → Rename → Name of PC: → Clone). Per collegare il PC allo switch usare un cavo di
+rete Ethernet Straight thru che trovate nella sezione “Cables”. Nel fare questa operazione, vi verrà
+chiesto a quale porta dello switch collegare il PC, selezionate la prima porta libera.
+
+Ora che sapete come aggiungere PC, switch e come collegarli tra loro, realizzate la base per la
+seguente struttura:
+
+3
+
+NOTA: Alcuni switch sono dotati di una funzionalità di autosensing per cui sono in grado di
+adattare la modalità di trasmissione. In tal caso non serve il cavo incrociato. Negli switch
+senza questa funzionalità, come nel caso degli switch usati in questo emulatore, i collegamenti
+tra switch devono essere fatti con cavi Ethernet Crossover
+Vediamo ora come configurare gli indirizzi IP. Fare tasto destro sul primo PC “STD1” e scegliere la
+voce “PC Network Properties”. Si aprirà la seguente finestra:
+
+Inserire il seguente indirizzo:
+IP: 192.168.0.11
+Subnet: 255.255.255.0
+
+4
+
+(Cliccare su Apply per confermare)
+Per verificare che effettivamente la configurazione sia stata salvata, fare doppio click sul PC, vi
+aprirà un'interfaccia dalla quale potete selezionare il prompt dei comandi classico di windows. A
+questo punto, digitando il comando ipconfig dovreste vedere l'indirizzo IP che avete impostato.
+Ripetere la stessa cosa con gli altri PC, cambiando l'IP andando in sequenza.
+A questo punto, se provate ad andare sul prompt dei comandi di uno dei PC e provate a pingare uno
+degli altri PC, dovreste riuscire ad avere qualcosa simile a quanto riportato nella seguente figura:
+
+Configuriamo ora gli switch. Per fare ciò, dobbiamo collegarci allo switch sulla porta seriale con un
+cavo console tramite un PC. Trasciniamo quindi sulla mappa un PC e colleghiamolo allo switch con
+un cavo console (vi sarà chiesto su quale porta seriale COM collegarlo). Fate doppio click sul PC
+collegato allo switch e aprite HyperTerminal-PE e premete INVIO, si aprirà la seguente finestra:
+
+5
+
+A questo punto sarete collegati tramite terminale allo switch, e avrete a disposizione tutta una serie
+di comandi per la configurazione dello switch.
+
+1.2.1
+
+Comandi principali
+
+•
+
+?: per far uscire la lista dei comandi disponibili
+
+•
+
+<TAB>: per compilare i comandi (come sulla bash linux)
+
+•
+
+show version: per ricevere informazioni sul modello dell'apparecchio, la versione del
+firmware, ecc …
+
+•
+
+show interface: per vedere lo stato delle interfacce dello switch
+
+•
+
+enable: entra in modalità privilegiata, il prompt di trasforma da > a #
+
+1.2.2
+
+Comandi importanti in modalità privilegiata
+
+•
+
+exit: per tornare alla modalità precedente
+
+•
+
+show running-config: per vedere la configurazione che sta girando sullo switch
+
+•
+
+copy running-config: per salvare la configurazione corretta nella flashrom dello switch
+
+•
+
+configure terminal: entra in modalità configurazione terminale, il prompt si trasforma da #
+a (config)#
+6
+
+1.2.3
+
+Comandi importanti in modalità configurazione terminale
+
+•
+
+exit: per tornare alla modalità precedente
+
+•
+
+hostname: per cambiare il nome dell'apparecchio
+
+•
+
+interface <nomeinterfaccia> : entra in modalità configurazione interfaccia, il prompt
+si trasforma (config)# a (config-if)#
+
+1.2.4
+
+Comandi importanti in modalità configurazine interfaccia
+
+•
+
+ip address <indirizzo_ip> <netmask>: assegna l'indirizzo IP e netmask
+all'interfaccia
+
+•
+
+no shutdown: per abilitare l'interfaccia
+
+•
+
+exit: per tornare alla modalità precedente
+
+Vogliamo ora dare un IP allo switch (l'indirizzo che assegneremo allo switch serve solo per
+management) per fare ciò occorre configurare la vlan di default (vlan1)
+Entriamo in modalità privilegiata, in modalità configurazione terminale e poi nella configurazione
+dell'interfaccia:
+enable
+configure terminal
+interface vlan1
+ip address 192.168.0.254 255.255.255.0
+no shutdown
+Configurate anche gli altri switch in modo che prendano gli ultimi 3 indirizzi disponibili nella
+sottorete 192.168.0.0/24
+
+1.3. Osservazioni conclusive
+•
+
+Perché non è necessario configurare il gateway nei vari PC? Cosa consente ai PC di poter
+comunicare tra loro?
+
+•
+
+Abbiamo configurato un indirizzo IP anche per gli switch, è necessario? A cosa serve?
+
+7
+
+2 VLAN BASE
+2.1. Obiettivi
+Configurazione di una rete che segmenti l'infrastruttura facendo uso di Virtual LAN.
+•
+
+Usando l'esempio precedente creiamo 4 nuovi PC;
+
+•
+
+Ai 4 PC diamo indirizzi della sottorete 192.168.0.0/24 e agli altri 4 diamo indirizzi della
+sottorete 192.168.1.0/24;
+◦ ATTENZIONE: ad ogni VLAN deve sempre corrispondere una sottorete diversa!
+
+•
+
+Configuriamo 2 VLAN che mettano in comunicazione i PC all'interno della propria sottorete
+.
+
+2.2. Esercizio
+Vediamo adesso come configurare una rete che segmenti l'infrastruttura facendo uso di Virtual
+LAN. Partendo dalla struttura che abbiamo visto nell'esercizio di prima, aggiungiamo 4 PC come
+mostrato nella seguente figura:
+
+8
+
+Costruire la rete con il seguente indirizzamento e verificare che i PC si raggiungano tramite ping:
+STD1: 192.168.0.11
+
+DOC1: 192.168.1.11
+
+STD2: 192.168.0.12
+
+DOC2: 192.168.1.12
+
+STD3: 192.168.0.13
+
+DOC3: 192.168.1.13
+
+STD4: 192.168.0.14
+
+DOC4: 192.168.1.14
+
+2.2.1
+
+Configurazione degli switch
+
+Collegate un terminale al primo switch (quello che collega DOC1, STD1, ecc) e nella console
+scrivete:
+Switch>enable
+Switch#configure terminal
+Enter configuration commands, one per line. End with CNTL/Z
+Diamo il nome allo switch
+Switch(config)#hostname SW1
+
+Configuriamo la VLAN studenti:
+SW1(config)#vlan 10
+SW1(config-vlan)#name studenti
+SW1(config-vlan)#exit
+SW1(config)#exit
+Guardiamo se è stata creata la VLAN con il comando show vlan:
+SW1#show vlan
+
+Configurare la VLAN per i docenti nello stesso modo (il numero della VLAN docenti sarà 20). Se
+avete fatto tutto correttamente, con il comando show vlan dovreste ottenere:
+VLAN Name
+
+Status
+
+Ports
+
+---- -------------------------------- --------- ----------------------1
+
+default
+
+active
+
+Fa0/1, Fa0/2, Fa0/3,
+Fa0/4 Fa0/5, Fa0/6,
+Fa0/7, Fa0/8 Fa0/9,
+Fa0/10, Fa0/11, Fa0/12
+Fa0/13, Fa0/14, Fa0/15,
+Fa0/16 Fa0/17, Fa0/18,
+Fa0/19, Fa0/20
+Fa0/21, Fa0/22, Fa0/23,
+Fa0/24
+Gi0/1, Gi0/2
+
+10
+
+studenti
+
+active
+
+20
+
+docenti
+
+active
+
+1002 fddi-default
+
+act/unsup
+
+9
+
+1003 token-ring-default
+
+act/unsup
+
+1004 fddinet-default
+
+act/unsup
+
+1005 trnet-default
+
+act/unsup
+
+Ora andiamo ad assegnare alla VLAN studenti le porte dello switch a cui sono collegati i PC.
+SW1#configure terminal
+SW1(config)#interface F0/1
+SW1(config-if)#switchport access vlan 10
+SW1(config-if)#exit
+SW1(config)#exit
+Di nuovo, per controllare le impostazioni digitare il comando show vlan.
+Ripetete la stessa operazioni per tutti gli altri terminali, associando alla VLAN 10 le interfacce alle
+quali sono collegati i PC della VLAN studenti e alla VLAN 20 le interfaccia alle quali sono
+collegati i PC della VLAN docenti.
+Ripetete la stessa operazione anche per configurare lo switch che collega il segmento dei PC che
+comprendono STD3, DOC3 ecc.
+A questo punto, se provate e pingare i PC nei due segmenti di rete separati dai due switch, noterete
+che i PC studenti pingano solo i PC studenti e i PC docenti pingano solo i PC docenti, però, essendo
+i due segmenti di rete su due switch diversi, non si possono pingare tra loro.
+Per risolvere il problema si usano le porte di trunk, che sono tipicamente utilizzate per collegare fra
+loro due switch in modo che una o più VLAN possano estendersi sui diversi switch.
+Su ogni switch è possibile configurare una o più porte come “trunk port” in cui possono essere
+convogliate diverse VLAN. Impostiamo quindi la porta che fa da up-link allo switch di livello
+superiore come trunk port.
+ATTENZIONE: controllare il nome della interfaccia, nell'esempio di questo esercizio è F0/3, ma
+in base ai vostri collegamenti potrebbe variare.
+Switch2:
+SW2>enable
+SW2#configure terminal
+Enter configuration commands, one per line. End wi
+th CNTL/Z.
+SW2(config)#interface F0/3
+SW2(config-if)#switchport mode trunk
+SW2(config-if)#exit
+SW2(config)#exit
+SW2#
+Switch1:
+SW1#configure terminal
+Enter configuration commands, one per line. End wi
+th CNTL/Z.
+SW1(config)#interface F0/3
+10
+
+SW1(config-if)#switchport mode trunk
+SW1(config-if)#exit
+SW1(config)#exit
+SW1#
+Infine bisogna impostare le porte in trunk mode anche per lo switch SW3, che è lo switch di livello
+superiore. Collegate un terminale allo switch SW3 e nella console scrivere:
+Switch>enable
+Switch#configure terminal
+Enter configuration commands, one per line. End with CNTL/Z.
+Diamo il nome allo switch
+Switch(config)#hostname SW3
+Configuriamo le VLAN studenti e docenti
+SW3(config)#vlan 10
+SW3(config-vlan)#name studenti
+SW3(config-vlan)#exit
+SW3(config)#vlan 20
+SW3(config-vlan)#name docenti
+SW3(config-vlan)#exit
+SW3(config)#exit
+SW3#
+Configuriamo le interfacce in trunk mode
+SW3(config)#interface F0/1
+SW3(config-if)#switchport mode trunk
+SW3(config-if)#interface F0/2
+SW3(config-if)#switchport mode trunk
+SW3(config-if)#exit
+Per concludere, verificate che i PC appartenenti alla stessa VLAN, ma attestati su switch diversi,
+siano raggiungibili, ovvero fate un ping da un PC attestato su uno switch ad un PC della stessa
+VLAN attestato su un altro switch. Inoltre, provate a fare ping tra due PC appartenenti a VLAN
+diverse: cosa succede?
+
+2.3. Osservazioni conclusive
+•
+
+Nella semplice configurazione proposta ad ogni switch erano collegati sia utenti
+appartenenti al gruppo studenti che utenti del gruppo docenti:
+◦ Non era più facile dedicare uno switch per il gruppo studenti e uno per il gruppo
+docenti?
+◦ Perché ci interessa che sullo stesso switch ci possano essere gruppi diversi di utenti?
+
+•
+
+Cosa succede al traffico broadcast di livello 2 (ad esempio, una richiesta ARP) inviato da un
+utente del gruppo docenti ? Quali utenti vedranno tale traffico?
+
+•
+
+Cosa succede al traffico broadcast di livello 3 (ad esempio, una richiesta DHCP) inviato da
+un utente del gruppo docenti ? Quali utenti vedranno tale traffico?
+
+•
+
+Nella configurazione delle VLAN, notate che ci sono due passaggi: creazione della VLAN
+11
+
+stessa e assegnamento delle porte ad una VLAN. Nel caso di porta trunk, non viene
+assegnata nessuna VLAN esplicita (o nessuna lista di VLAN permesse) a tale porta. Come
+fa lo switch a sapere se deve rigirare il traffico di una specifica VLAN su una porta trunk,
+ovvero se lo switch dall'altra parte del collegamento ha delle porte configurate con quella
+specifica VLAN?
+
+12
+
+3 Intra VLAN routing
+3.1. Obiettivi
+Per poter far comunicare le due VLAN tra loro, è necessario estendere l'esercizio precedente,
+attraverso l'aggiunta di un router 2620 che metta i due segmenti di VLAN in comunicazione.
+
+3.2. Esercizio
+Estendete la rete aggiungendo un Router 2620. Per il collegamento tra il router e lo switch usare un
+cavo straight through (non crossover).
+
+Andiamo a configurare SW3, in particolare impostiamo la porta che si collega al router in trunk
+mode:
+SW3>enable
+SW3#configure terminal
+SW3(config)#interface F0/3
+SW3(config-if)#switchport mode trunk
+SW3(config-if)#exit
+SW3(config)#exit
+Infine programmiamo il Router in modo che faccia routing tra le due VLAN.
+Per fare questo si devono creare due sottointerfacce dell'interfaccia a cui è collegato il trunk
+proveniente dallo switch, e si devono impostare gli IP delle sottointerfacce in modo tale che
+facciano da default gateway per le due VLAN.
+Router>enable
+Router#configure terminal
+13
+
+Router(config)#interface FastEthernet0/0.1
+Specifichiamo tramite quale protocollo di incapsulazione utilizzeremo e l'ID della VLAN associata
+tramite il comando:
+encapsulation dot1q <vlanID [native]>
+Router(config-subif)#encapsulation dot1q 10
+Impostiamo l'indirizzo IP per il gateway della VLAN 10 (studenti):
+Router(config-subif)#ip address 192.168.0.1 255.255.255.0
+Configuriamo anche la seconda sottointerfaccia:
+Router(config)#interface FastEthernet0/0.2
+Router(config-subif)#encapsulation dot1q 20
+Router(config-subif)#ip address 192.168.1.1 255.255.255.0
+Router(config)#exit
+Infine bisogna attivare l'interfaccia F0/0
+Router(config)#interface FastEthernet0/0
+Router(config-if)#no shutdown
+A questo punto bisogna impostare i default gateway sui PC:
+•
+
+per i PC della VLAN studenti GW: 192.168.0.1
+
+•
+
+per i PC della VLAN docenti GW: 192.168.1.1
+
+Per concludere, verificate che i PC appartenenti a VLAN diverse (e quindi sottoreti diverse) siano
+raggiungibili, ovvero fate un ping da un PC di una sottorete ad un PC di un’altra sottorete.
+
+3.3. Osservazioni conclusive
+Si risponda alle ultime due domande della sezione precedente dopo l'aggiunta del router, ovvero:
+•
+
+Cosa succede al traffico broadcast di livello 2 (ad esempio, una richiesta ARP) inviato da un
+utente del gruppo docenti ? Quali utenti vedranno tale traffico?
+
+•
+
+Cosa succede al traffico broadcast di livello 3 (ad esempio, una richiesta DHCP) inviato da
+un utente del gruppo docenti ? Quali utenti vedranno tale traffico?
+
+In aggiunta,
+•
+
+Qual è il percorso seguito da un generico pacchetto inviato dall'utente DOC1 all'utente
+STD1?
+
+•
+
+Nel caso venisse aggiunta una VLAN, quante sotto-interfacce avrebbe il router sul singolo
+collegamento fisico?
+
+•
+
+Fino a quante sotto interfacce si possono creare su un'interfaccia di un router?
+
+•
+
+In questo esercizio, all’interfaccia fisica del router sono associate 2 sottointerfacce e due
+indirizzi IP: quanti indirizzi MAC sono associati all’interfaccia?
+
+14
+
+4 DHCP
+4.1. Obiettivi
+Introduzione di un server DHCP per l'assegnazione automatica degli indirizzi IP. In particolare:
+•
+
+Verrà configurato il router 2620 aggiunto precedentemente, in modo che funga da server
+DHCP;
+
+•
+
+Verranno riconfigurati gli utenti affinché ottengano l'indirizzo dal server DHCP.
+
+4.2. Esercizio
+Innanzi tutto si noti che dobbiamo gestire due reti VLAN, le quali necessariamente hanno
+indirizzamento separato (una sottorete per ogni VLAN). Questo viene gestita automaticamente dal
+router Cisco una volta che abbiamo impostato le due sotto interfacce nella sezione precedente, ma
+dobbiamo comunque creare due diversi pool da cui le due reti ricevono gli indirizzi IP.
+NOTA: Per comodità, potete lasciare connesso al router il PC utilizzato per configurarlo, in modo
+da accedere successivamente alla sua configurazione; in alternativa, il router può essere raggiunto
+da qualsiasi PC tramite telnet, usando un qualsiasi indirizzo IP assegnato alle interfacce del router.
+Andiamo quindi nel router e iniziamo:
+Router(config)#ip dhcp pool studenti
+Router(dhcp-config)#network 192.168.0.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.0.1
+Router(dhcp-config)#lease 7
+Router(dhcp-config)#exit
+Questo ci consente di impostare il primo pool chiamato studenti e che servirà tutti i PC che
+appartengono alla VLAN studenti identificata dall'ID 10. L'identificazione della VLAN è
+trasparente perché la sottointerfaccia FastEthernet0/0.1 ha come indirizzo IP un indirizzo del pool
+studenti, quindi ogni richiesta con ID 10 andrà a fare riferimento al pool studenti.
+Fare la stessa cosa per creare un pool per i computer dei docenti. Ricordiamo che la rete dei docenti
+è 192.168.1.0/255.255.255.0 con default-router 192.168.1.1
+
+A questo punto dobbiamo togliere l'indirizzamento statico che abbiamo dato ai computer, e abilitare
+l'indirizzamento tramite DHCP. Apriamo le impostazioni di rete dei computer e andiamo su PC
+Network Properties
+
+15
+
+Nella finestra che si aprirà impostiamo la voce “Obtain an IP address automaticaly (DHCP)” e
+clicchiamo su Apply.
+Se a questo punto apriamo il prompt dei comandi e digitiamo il comando ipconfig /all
+vefremo che la macchina ha ricevuto il primo indirizzo libero del pool valido per quella macchina.
+Ad esempio, se è la prima macchina di quelli studenti vedremo:
+
+Windows IP configuration
+Host Name . . . . . . . . . : STD1
+Primary DNS Suffix. . . . . :
+Node Type . . . . . . . . . : Broadcast
+NetBIOS Scope ID. . . . . . :
+IP Routing enabled. . . . . : No
+WINS Proxy enabled. . . . . : No
+NetBIOS Resolution uses DNS : No
+Ethernet Adapter SUMOLDCARD_00X1:
+Description . . . . . . . . : SumJunk Fast Ethernet Adapter
+Physical Address. . . . . . : 5E-4F-A3-00-10-03
+DHCP enabled. . . . . . . . : Yes
+IP Address. . . . . . . . . : 192.168.0.2
+Subnet Mask . . . . . . . . : 255.255.255.0
+Default Gateway . . . . . . : 192.168.0.1
+DHCP Server . . . . . . . . : 255.255.255.255
+
+16
+
+DNS Servers . . . . . . . . :
+Lease Obtained. . . . . . . : Friday, 23 January 2015 3:46:34 PM
+Lease Expires . . . . . . . : Friday, 30 January 2015 3:46:09 PM
+
+Analogamente per gli altri PC.
+
+Come test finale, per controllare che tutte le configurazioni siano corrette, si provi a mandare ping
+tra i vari PC.
+
+4.3. Osservazioni conclusive
+•
+
+Si controlli il significato dei comandi che si possono impartire quando il router è in modalità
+dhcp-config; ad esempio, cosa significa il comando lease e che parametri vuole?
+
+•
+
+Verificate quale indirizzo è stato assegnato ad una macchina dal server DHCP (ad esempio,
+la macchina DOC1). Chiamiamo tale indirizzo IP_a. Cosa succede se assegnate
+manualmente proprio tale indirizzo, ovvero IP_a, ad un'altra macchina, ad esempio DOC2?
+
+•
+
+Sarebbe possibile impostare il server DHCP in modo che il range di indirizzi della sottorete
+192.168.0.0 vada solo tra 192.168.0.100 e 192.168.0.110?
+
+17
+
+5 Routing
+5.1. Obiettivi
+Estensione della rete in modo da gestire collegamenti tra più reti.
+•
+
+Creazione di più reti locali da mettere in comunicazione tra loro;
+
+•
+
+Aggiunta di un router per ogni nuova rete create;
+
+•
+
+Collegamento dei router con un cavo WAN.
+
+5.2. Esercizio
+Immaginiamo ora di dover estendere la rete in modo da collegare più dipartimenti tra loro. Ogni
+dipartimento ha la sua sottorete con VLAN dedicate a studenti e docenti e un router che consente
+alle due VLAN di comunicare tra loro (ovvero quello che abbiano fatto fino ad ora). Adesso
+vogliamo mettere in comunicazione i router dei vari dipartimenti in modo che possano interagire tra
+loro. Quello che vogliamo ottenere è rappresentato nella seguente figura:
+
+Dettagli della rete:
+Dipartimento 1
+
+Dipartimento 2
+
+Dipartimento 3
+
+STD: 192.168.0.0/24
+DOC: 192.168.1.0/24
+
+STD: 192.168.2.0/24
+DOC: 192.168.3.0/24
+
+STD: 192.168.4.0/24
+DOC: 192.168.5.0/24
+
+18
+
+Configuriamo il primo router (la configurazione degli altri sarà analoga).
+Router#configure terminal
+Router(config)#interface S0/0
+Router(config-if)#ip address 10.0.0.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Controlliamo se siamo sul lato DCE o DTE del cavo
+Router#show controllers S0/0
+<Blah blah blah for a few lines>
+buffer size 1524 HD unit -1, V.35 DCE cable, clockrate 64000
+<Blah blah blah for LOTS more lines...
+...This information is specific to the chipset in the interface
+and includes a lot of incomprehensible gobbledy gook...
+But it DOES have statistical counts such as:
+- buffer over/under runs,
+- memory errors,
+- encapsulation errors,
+- etc.
+which is useful for indicating a congested or error-prone line.
+Si tratta della parte DCE, quindi il clock va impostato su questa interfaccia
+Router#configure terminal
+Router(config)#interface S0/0
+Router(config-if)#clock rate 64000
+Router(config-if)#exit
+(Analogamente si configura l'interfaccia S0/1).
+Andiamo ora ad abilitare il protocollo RIP
+Router(config)#router rip
+Router(config-router)#network 10.0.0.0
+Router(config-router)#network 10.0.1.0
+Router(config-router)#network 192.168.0.0
+Router(config-router)#network 192.168.1.0
+Router(config-router)#exit
+A questo punto abbiamo configurato il primo router, la configurazione degli altri 2 router è identica
+a questa con i relativi indirizzi. Ricordarsi che il clock delle interfacce WAN va impostato solo sul
+lato dell'intefaccia DCE.
+Al termine della configurazione possiamo vedere la tabella di routing con il comando
+Router#show ip route
+e dovremmo vedere qualcosa del tipo (per il primo router):
+
+19
+
+...
+Network 10.0.0.0 is subnetted, 3 subnets
+C
+C
+R
+R
+C
+C
+R
+
+192.168.0.0/24 is directly connected to FastEthernet0/0.1
+192.168.1.0/24 is directly connected to FastEthernet0/0.2
+192.168.2.0/24 [120/1] via 10.0.1.2 00:00:03 S0/0
+192.168.3.0/24 [120/1] via 10.0.1.2 00:00:01 S0/1
+10.0.0.0/24 is directly connected to Serial0/0
+10.0.1.0/24 is directly connected to Serial0/1
+10.0.2.0/24 [120/1] via 10.0.1.2 00:00:01 S0/1
+
+Riportando la stessa configurazione anche sugli altri router saremo in grado di far comunicare tra
+loro i diversi dipartimenti.
+
+5.3. Osservazioni conclusive
+•
+
+Cosa succede se, durante la configurazione del protocollo RIP per uno dei router, non
+inserisco una delle reti attestaste sul router stesso?
+
+•
+
+Provate ad eseguire il comando tracert (traceroute) e verificate il percorso che viene
+fatto dai pacchetti.
+
+•
+
+Cosa succede se uno dei collegamenti WAN va offline?
+
+20
+
+6 NAT
+6.1. Obiettivi
+Introduzione di Network Address Translation (NAT) per rimappare tutti i PC di una sottorete in
+modo che risultino tutti provenienti dallo stesso indirizzi IP pubblico.
+
+6.2. Esercizio
+Si parta dalla rete configurata nella sezione precedente.
+
+Si aggiunga una nuova rete:
+
+21
+
+Configuriamo il nuovo Router, per prima cosa configuriamo l'interfaccia F0/0 che è rivolta
+all'interno del NAT e successivamente configuriamo l'interfaccia F0/1 che funge da interfaccia
+pubblica:
+Router#configure terminal
+Router(config)#interface F0/0
+Router(config-if)#ip address 192.168.6.1 255.255.255.0
+Router(config-if)#ip nat inside
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router#configure terminal
+Router(config)#interface F0/1
+Router(config-if)#ip address 10.10.10.1 255.255.255.0
+Router(config-if)#ip nat outside
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Impostiamo la NAT dinamica
+Router(config)#ip nat pool servizi 10.10.10.1 10.10.10.1 prefixlength 24
+Router(config)#access-list 1 permit 192.168.6.0 0.0.0.255
+Router(config)#ip nat inside source list 1 pool servizi overload
+Configuriamo RIP
+Router(config)#router rip
+Router(config-router)#network 10.10.10.0
+22
+
+Router(config-router)#exit
+Router(config)#exit
+Sul Router 3 assegniamo l’indirizzo alla nuova interfaccia aggiunta:
+Router#configure terminal
+Router(config)#interface F0/1
+Router(config-if)#ip address 10.10.0.2 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Successivamente, aggiungiamo la nuova rete anche al RIP del Router3 a cui è collegato il nuovo
+router:
+Router(config)#router rip
+Router(config-router)#network 10.10.10.0
+Router(config-router)#exit
+Router(config)#exit
+Proviamo a verificare che i PC interni al NAT siano effettivamente nattati. Andando su PC Home1
+proviamo ad eseguire un ping ad un indirizzo fuori dal NAT:
+Pinging 192.168.0.2 with 32 bytes of data:
+Reply from 192.168.0.2 on Eth, time<10ms TTL=125
+Reply from 192.168.0.2 on Eth, time<10ms TTL=125
+Reply from 192.168.0.2 on Eth, time<10ms TTL=125
+Reply from 192.168.0.2 on Eth, time<10ms TTL=125
+e vediamo il NAT sul router:
+Pro Inside global
+icmp 10.10.10.1:513
+
+Inside local
+192.168.6.2:513
+
+Outside local
+192.168.0.2:513
+
+Outside global
+192.168.0.2:513
+
+Vediamo che il PC Home1 è stato nattato con l'indirizzo 10.10.10.1 porta 513
+
+6.3. Osservazioni conclusive
+•
+
+Una volta introdotto il NAT come è possibile per un PC fuori dal NAT, accedere ad un PC
+dentro il NAT?
+
+•
+
+Qual è il principale uso del NAT?
+
+•
+
+Qual è la differenza tra NAT dal NAPT? ... E il “port forwarding”?
+
+In aggiunta:
+•
+
+Che cos'è e a cosa server il “port triggering”?
+
+23
+
+
