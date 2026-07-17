@@ -1,0 +1,59 @@
+ESERCIZIO 3
+
+# Usa la topologia dell'ESERCIZIO 2
+
+# Crea 1 Router [ R1 ]
+Network Devices > Routers > 2620XM (o equivalente)
+
+# Collega cavo diretto da SW3 (es. porta Fa0/3) a R1 (porta Fa0/0)
+Connections > Copper Straight-Through
+
+# Configura Switch 3 (Centrale) per abilitare il trunk verso il Router
+# Crea PC temporaneo e collega RS232 del PC a Console dello Switch
+Desktop > Terminal > ok
+
+# Switch3 (Centrale)
+SW3>			enable
+SW3#			configure terminal
+SW3(config)#		interface Fa0/3
+SW3(config-if)#		switchport mode trunk
+SW3(config-if)#		exit
+SW3(config)#		exit
+
+# Configura Router R1 per il routing Inter-VLAN (Router-on-a-Stick)
+# Crea PC temporaneo e collega RS232 del PC a Console del Router
+Desktop > Terminal > ok
+
+# Router1
+Router>			enable
+Router#			configure terminal
+Router(config)#		hostname R1
+
+# Configurazione Sotto-interfaccia VLAN 10 (Studenti)
+R1(config)#		interface FastEthernet0/0.1
+R1(config-subif)#	encapsulation dot1Q 10
+R1(config-subif)#	ip address 192.168.0.1 255.255.255.0
+R1(config-subif)#	exit
+
+# Configurazione Sotto-interfaccia VLAN 20 (Docenti)
+R1(config)#		interface FastEthernet0/0.2
+R1(config-subif)#	encapsulation dot1Q 20
+R1(config-subif)#	ip address 192.168.1.1 255.255.255.0
+R1(config-subif)#	exit
+
+# Attivazione dell'interfaccia fisica principale
+R1(config)#		interface FastEthernet0/0
+R1(config-if)#		no shutdown
+R1(config-if)#		exit
+R1(config)#		exit
+
+# Configura i Default Gateway sui PC
+Desktop > IP Configuration > Default Gateway
+
+# Per la VLAN Studenti (STD1, STD2, STD3, STD4):
+Default Gateway: 192.168.0.1
+
+# Per la VLAN Docenti (DOC1, DOC2, DOC3, DOC4):
+Default Gateway: 192.168.1.1
+
+# Ora i PC appartenenti a VLAN diverse (es. STD1 e DOC1) possono comunicare tra loro. Il traffico viene inviato allo switch, instradato sul trunk fino al router, che lo elabora tramite le sotto-interfacce e lo reinstrada verso la VLAN di destinazione.

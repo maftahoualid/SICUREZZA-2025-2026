@@ -1,0 +1,41 @@
+ESERCIZIO 4
+
+# Usa la topologia dell'ESERCIZIO 3 (con lo switch e il Router già configurato per il routing Inter-VLAN)
+
+# Configura Router R1 in modo che faccia da server DHCP per entrambe le VLAN
+# Crea PC temporaneo e collega RS232 del PC a Console del Router
+Desktop > Terminal > ok
+
+# Router1
+Router>			enable
+Router#			configure terminal
+
+# Creazione pool DHCP per VLAN 10 (Studenti)
+R1(config)#		ip dhcp pool studenti
+R1(dhcp-config)#	network 192.168.0.0 255.255.255.0
+R1(dhcp-config)#	default-router 192.168.0.1
+R1(dhcp-config)#	lease 7
+R1(dhcp-config)#	exit
+
+# Creazione pool DHCP per VLAN 20 (Docenti)
+R1(config)#		ip dhcp pool docenti
+R1(dhcp-config)#	network 192.168.1.0 255.255.255.0
+R1(dhcp-config)#	default-router 192.168.1.1
+R1(dhcp-config)#	lease 7
+R1(dhcp-config)#	exit
+R1(config)#		exit
+
+# Abilita l'assegnazione IP via DHCP su tutti i PC
+Desktop > IP Configuration
+
+# Per tutti i PC (STD1..STD4, DOC1..DOC4):
+Cambiare la spunta da "Static" a "DHCP"
+Attendere che il PC riceva l'indirizzo IP, la Subnet Mask e il Default Gateway.
+
+# Verifica le assegnazioni IP
+Desktop > Command Prompt
+Eseguire il comando: ipconfig /all
+L'indirizzo assegnato sarà il primo indirizzo libero nel rispettivo pool (es. 192.168.0.2 per STD1, 192.168.1.2 per DOC1).
+
+# Verifica la connettività
+Provare ad eseguire il ping tra i vari PC appartenenti alla stessa o a diversa VLAN per verificare che la configurazione DHCP e il routing continuino a funzionare.

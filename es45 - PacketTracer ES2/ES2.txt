@@ -1,0 +1,112 @@
+ESERCIZIO 2
+
+# Crea 8 PC
+End Devices > End Devices > PC
+
+# Cambia Nome agli 8 PC [ STD1 STD2 STD3 STD4 DOC1 DOC2 DOC3 DOC4 ]
+Config / Display Name (oppure clicca sul nome PC<x>)
+
+# Crea 3 Switch [ SW1 SW2 SW3 ]
+Network Devices > Switches > 2950-24
+
+# Collega cavo diretto STD1, STD2, DOC1, DOC2 a SW1 (rispettivamente porte Fa0/1, Fa0/2, Fa0/4, Fa0/5)
+# Collega cavo diretto STD3, STD4, DOC3, DOC4 a SW2 (rispettivamente porte Fa0/1, Fa0/2, Fa0/4, Fa0/5)
+Connections > Copper Straight-Through
+
+# Collega cavo incrociato da SW1 (porta Fa0/3) e SW2 (porta Fa0/3) allo switch centrale SW3 (porte Fa0/1 e Fa0/2)
+Connections > Copper Cross-Over
+
+# Configura IP e Maschera
+Desktop > IP Configuration > IPv4 ADDRESS 
+STD1 192.168.0.11
+STD2 192.168.0.12
+STD3 192.168.0.13
+STD4 192.168.0.14
+
+DOC1 192.168.1.11
+DOC2 192.168.1.12
+DOC3 192.168.1.13
+DOC4 192.168.1.14
+Desktop > IP Configuration > Subnet Mask
+STD1 255.255.255.0
+STD2 255.255.255.0
+STD3 255.255.255.0
+STD4 255.255.255.0
+
+DOC1 255.255.255.0
+DOC2 255.255.255.0
+DOC3 255.255.255.0
+DOC4 255.255.255.0
+
+# Configura Switch
+# Crea PC temporaneo e collega RS232 del PC a Console dello Switch
+Desktop > Terminal > ok
+
+# Switch1
+SW1>		    	enable
+SW1#		    	configure terminal
+SW1(config)#		hostname SW1
+SW1(config)#		vlan 10
+SW1(config-vlan)#	name studenti
+SW1(config-vlan)#	exit
+SW1(config)#		vlan 20
+SW1(config-vlan)#	name docenti
+SW1(config-vlan)#	exit
+SW1(config)#		interface Fa0/1
+SW1(config-if)#		switchport access vlan 10
+SW1(config-if)#		exit
+SW1(config)#		interface Fa0/2
+SW1(config-if)#		switchport access vlan 10
+SW1(config-if)#		exit
+SW1(config)#		interface Fa0/4
+SW1(config-if)#		switchport access vlan 20
+SW1(config-if)#		exit
+SW1(config)#		interface Fa0/5
+SW1(config-if)#		switchport access vlan 20
+SW1(config-if)#		exit
+SW1(config)#		interface Fa0/3
+SW1(config-if)#		switchport mode trunk
+SW1(config-if)#		exit
+
+# Switch2
+SW2>			enable
+SW2#			configure terminal
+SW2(config)#		vlan 10
+SW2(config-vlan)#	name studenti
+SW2(config-vlan)#	exit
+SW2(config)#		vlan 20
+SW2(config-vlan)#	name docenti
+SW2(config-vlan)#	exit
+SW2(config)#		interface Fa0/1
+SW2(config-if)#		switchport access vlan 10
+SW2(config-if)#		exit
+SW2(config)#		interface Fa0/2
+SW2(config-if)#		switchport access vlan 10
+SW2(config-if)#		exit
+SW2(config)#		interface Fa0/4
+SW2(config-if)#		switchport access vlan 20
+SW2(config-if)#		exit
+SW2(config)#		interface Fa0/5
+SW2(config-if)#		switchport access vlan 20
+SW2(config-if)#		exit
+SW2(config)#		interface Fa0/3
+SW2(config-if)#		switchport mode trunk
+SW2(config-if)#		exit
+
+# Switch3 (Centrale)
+SW3>			enable
+SW3#			configure terminal
+SW3(config)#		vlan 10
+SW3(config-vlan)#	name studenti
+SW3(config-vlan)#	exit
+SW3(config)#		vlan 20
+SW3(config-vlan)#	name docenti
+SW3(config-vlan)#	exit
+SW3(config)#		interface Fa0/1
+SW3(config-if)#		switchport mode trunk
+SW3(config-if)#		exit
+SW3(config)#		interface Fa0/2
+SW3(config-if)#		switchport mode trunk
+SW3(config-if)#		exit
+
+# I PC della stessa VLAN comunicano tra loro (es. STD1 con STD3) anche se si trovano su switch diversi grazie all'uso delle porte in modalità trunk, che permettono a una o più VLAN di estendersi sui diversi switch. I PC appartenenti a VLAN diverse, invece, non possono comunicare tramite ping perché si trovano su segmenti di rete e sottoreti isolate a livello 2.

@@ -1,0 +1,58 @@
+ESERCIZIO 5
+
+# Estendi la topologia precedente (Dipartimento 1) creando altri due dipartimenti completi:
+# Dipartimento 2: Router R2, Switch SW_D2, PC STD (rete 192.168.2.0/24), PC DOC (rete 192.168.3.0/24)
+# Dipartimento 3: Router R3, Switch SW_D3, PC STD (rete 192.168.4.0/24), PC DOC (rete 192.168.5.0/24)
+
+# NOTA: Per usare i collegamenti seriali tra i router (WAN), i Router 2620XM devono essere spenti, bisogna aggiungere il modulo "WIC-1T" o "WIC-2T" negli slot liberi, e poi riaccenderli.
+
+# Collega i Router tra loro con cavo Seriale (Serial DCE)
+Connections > Serial DCE
+# Collega R1 (es. Serial0/0) a R2 (es. Serial0/0)
+# Collega R2 (es. Serial0/1) a R3 (es. Serial0/0)
+# Collega R3 (es. Serial0/1) a R1 (es. Serial0/1) - OPZIONALE per chiudere l'anello
+
+# Configurazione interfacce Seriali su R1
+# Crea PC temporaneo e collega RS232 del PC a Console del Router R1
+Desktop > Terminal > ok
+
+# Router R1
+R1>			enable
+R1#			configure terminal
+R1(config)#		interface Serial0/0
+R1(config-if)#		ip address 10.0.0.1 255.255.255.0
+# (Solo se questo lato è DCE, cosa che vedi con il comando 'show controllers s0/0' da modalità privilegiata):
+R1(config-if)#		clock rate 64000
+R1(config-if)#		no shutdown
+R1(config-if)#		exit
+
+R1(config)#		interface Serial0/1
+R1(config-if)#		ip address 10.0.1.1 255.255.255.0
+# (Imposta il clock rate se questo lato è DCE)
+R1(config-if)#		no shutdown
+R1(config-if)#		exit
+
+# Abilitazione del protocollo di routing RIP su R1
+R1(config)#		router rip
+R1(config-router)#	network 10.0.0.0
+R1(config-router)#	network 10.0.1.0
+R1(config-router)#	network 192.168.0.0
+R1(config-router)#	network 192.168.1.0
+R1(config-router)#	exit
+R1(config)#		exit
+
+# Verifica della tabella di routing
+R1#			show ip route
+
+# Ripetere una configurazione analoga per R2 e R3
+# Per R2:
+# S0/0 connessa a 10.0.0.0/24 (IP: 10.0.0.2)
+# S0/1 connessa a 10.0.2.0/24 (IP: 10.0.2.1)
+# Reti RIP da dichiarare: 10.0.0.0, 10.0.2.0, 192.168.2.0, 192.168.3.0
+
+# Per R3:
+# S0/0 connessa a 10.0.2.0/24 (IP: 10.0.2.2)
+# S0/1 connessa a 10.0.1.0/24 (IP: 10.0.1.2)
+# Reti RIP da dichiarare: 10.0.1.0, 10.0.2.0, 192.168.4.0, 192.168.5.0
+
+# Al termine della configurazione di tutti i router, controllare che i pacchetti passino da un dipartimento all'altro tramite ping (es. da STD_Dipartimento1 a STD_Dipartimento2)

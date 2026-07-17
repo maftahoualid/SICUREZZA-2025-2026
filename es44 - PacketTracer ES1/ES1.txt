@@ -1,0 +1,65 @@
+# Seleziona più oggetti
+Tieni premuto SHIFT e seleziona
+
+# Clona oggetti selezionati (ANCHE LA CONFIGURAZIONE DEI PC)
+Tieni premuto CTRL e sposta in un altra area (oppure CTRL-C CTRL-V)
+
+ESERCIZIO 1
+
+# Crea 4 PC
+End Devices > End Devices > PC
+
+# Cambia Nome ai 4 PC [ STD1 STD2 STD3 STD4 ]
+Config / Display Name (oppure clicca sul nome PC<x>)
+
+# Crea 3 Switch [ SW0 SW1 SW2 ]
+Network Devices > Switches > 2950-24
+
+# Collega cavo diretto STD1 e STD2 a SW0
+# Collega cavo diretto STD3 e STD4 a SW1
+Connections > Copper Straight-Through
+
+# Collega cavo incrociato SW0 e SW1 a SW2
+Connections > Copper Cross-Over
+
+# Configura IP e Maschera
+Desktop > IP Configuration > IPv4 ADDRESS 
+STD1 192.168.0.11
+STD2 192.168.0.12
+STD3 192.168.0.13
+STD4 192.168.0.14
+Desktop > IP Configuration > Subnet Mask
+STD1 255.255.255.0
+STD2 255.255.255.0
+STD3 255.255.255.0
+STD4 255.255.255.0
+
+# Configura Switch
+# Crea PC temporaneo e collega RS232 del PC a Console dello Switch
+Desktop > Terminal > ok
+
+# Switch1
+Switch>			    enable
+Switch#				configure terminal
+Switch(config)#		hostname SW1
+Switch(config)#		interface vlan1
+Switch(config-if)#	ip address 192.168.0.254 255.255.255.0
+Switch(config-if)#	no shutdown
+
+# Switch2
+Switch>		    	enable
+Switch#		    	configure terminal
+Switch(config)#		hostname SW2
+Switch(config)#		interface vlan1
+Switch(config-if)#	ip address 192.168.0.253 255.255.255.0
+Switch(config-if)#	no shutdown
+
+# Switch3
+Switch>		    	enable
+Switch#		        configure terminal
+Switch(config)#		hostname SW3
+Switch(config)#		interface vlan1
+Switch(config-if)#	ip address 192.168.0.252 255.255.255.0
+Switch(config-if)#	no shutdown
+
+# I PC riescono a comunicare tra loro senza che sia impostato un gateway perché appartengono tutti alla stessa sottorete locale (192.168.0.0/24). L'IP assegnato agli switch, invece, non è necessario per il transito dei dati, ma serve esclusivamente per permettere all'amministratore di gestirli da remoto.

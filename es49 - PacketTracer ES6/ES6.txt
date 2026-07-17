@@ -1,0 +1,78 @@
+ESERCIZIO 6
+
+# Usa la topologia dell'ESERCIZIO 5
+# Aggiungi una nuova rete domestica "Home" protetta da NAT, connessa al Router R3 (Dipartimento 3)
+
+# Crea 1 Router [ R_NAT ]
+Network Devices > Routers > 2620XM (o equivalente)
+
+# Crea 1 Switch [ SW_Home ] e alcuni PC [ Home1, Home2... ]
+Network Devices > Switches > 2950-24
+End Devices > End Devices > PC
+
+# Collega i dispositivi della nuova rete
+# Collega Home1 a SW_Home (Copper Straight-Through)
+# Collega SW_Home a R_NAT porta FastEthernet0/0 (Copper Straight-Through)
+# Collega R_NAT porta FastEthernet0/1 a R3 porta FastEthernet0/1 (Copper Cross-Over)
+
+# Configura Router R_NAT (NAT e interfacce)
+# Crea PC temporaneo e collega RS232 del PC a Console del Router R_NAT
+Desktop > Terminal > ok
+
+# Router R_NAT
+R_NAT>			enable
+R_NAT#			configure terminal
+# Interfaccia verso l'interno (Inside NAT)
+R_NAT(config)#		interface FastEthernet0/0
+R_NAT(config-if)#	ip address 192.168.6.1 255.255.255.0
+R_NAT(config-if)#	ip nat inside
+R_NAT(config-if)#	no shutdown
+R_NAT(config-if)#	exit
+
+# Interfaccia verso l'esterno (Outside NAT)
+R_NAT(config)#		interface FastEthernet0/1
+R_NAT(config-if)#	ip address 10.10.10.1 255.255.255.0
+R_NAT(config-if)#	ip nat outside
+R_NAT(config-if)#	no shutdown
+R_NAT(config-if)#	exit
+
+# Configura NAT Dinamico con PAT (Overload)
+R_NAT(config)#		ip nat pool servizi 10.10.10.1 10.10.10.1 prefix-length 24
+R_NAT(config)#		access-list 1 permit 192.168.6.0 0.0.0.255
+R_NAT(config)#		ip nat inside source list 1 pool servizi overload
+
+# Configura Routing RIP su R_NAT
+R_NAT(config)#		router rip
+R_NAT(config-router)#	network 10.10.10.0
+R_NAT(config-router)#	exit
+R_NAT(config)#		exit
+
+# Configura Router R3 per accettare il collegamento dal nuovo R_NAT
+# Console su R3
+R3>			enable
+R3#			configure terminal
+R3(config)#		interface FastEthernet0/1
+# (Nota: Il PDF indica 10.10.0.2 ma per coerenza con la rete 10.10.10.x dovrebbe essere 10.10.10.2)
+R3(config-if)#		ip address 10.10.10.2 255.255.255.0
+R3(config-if)#		no shutdown
+R3(config-if)#		exit
+
+# Aggiungi la nuova rete al RIP di R3
+R3(config)#		router rip
+R3(config-router)#	network 10.10.10.0
+R3(config-router)#	exit
+R3(config)#		exit
+
+# Configura l'IP sul PC Home1 (Statico o DHCP se configurato)
+Desktop > IP Configuration
+IPv4: 192.168.6.2
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.6.1
+
+# Verifica del NAT
+# Da PC Home1, apri il Command Prompt e pinga un PC fuori dal NAT (es. STD1 192.168.0.2)
+PC> ping 192.168.0.2
+
+# Sul Router R_NAT, verifica le traduzioni NAT
+R_NAT# show ip nat translations
+# Dovresti vedere che l'indirizzo interno locale (192.168.6.2) è stato tradotto nell'indirizzo globale esterno (10.10.10.1).
